@@ -567,7 +567,6 @@
   <span class="version">v6.0</span>
   <div class="header-actions">
     <button class="header-btn" onclick="openCalculator()">🧮 Rechner</button>
-    <button class="header-btn" onclick="selectSaveFolder()" title="Speicherordner wählen" id="folder-btn">📁 <span id="folder-label">Ordner</span></button>
     <button class="header-btn save-btn" onclick="saveRapport()">💾 SPEICHERN</button>
   </div>
 </header>
@@ -602,6 +601,45 @@
 
     <!-- ====== PAGE: STAMMDATEN ====== -->
     <div class="page active" id="page-stammdaten">
+
+      <!-- SPEICHERORT -->
+      <div class="card" id="save-location-card">
+        <div class="card-header">
+          <span class="card-icon">📁</span>
+          <h3>Speicherort</h3>
+        </div>
+        <div class="card-body">
+          <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
+            <div style="flex:1; min-width:200px;">
+              <div style="font-size:12px; color:#888; margin-bottom:4px; text-transform:uppercase; font-weight:600;">Aktueller Ordner</div>
+              <div id="folder-display" style="
+                background:#f5f5f5; border:2px solid #ddd; border-radius:8px;
+                padding:10px 14px; font-size:14px; color:#333;
+                min-height:40px; display:flex; align-items:center; gap:8px;
+              ">
+                <span style="font-size:18px">📥</span>
+                <span id="folder-label">Downloads (Standard)</span>
+              </div>
+            </div>
+            <button onclick="selectSaveFolder()" id="folder-btn" style="
+              background:#1A1F2E; color:white; border:none;
+              padding:12px 20px; border-radius:8px;
+              font-size:14px; font-weight:700; cursor:pointer;
+              white-space:nowrap; height:fit-content;
+              display:flex; align-items:center; gap:8px;
+            ">📁 Ordner wählen</button>
+            <button onclick="clearSaveFolder()" title="Zurücksetzen" style="
+              background:#eee; color:#666; border:none;
+              padding:12px 14px; border-radius:8px;
+              font-size:16px; cursor:pointer; height:fit-content;
+            ">✕</button>
+          </div>
+          <div id="folder-hint" style="font-size:12px; color:#888; margin-top:8px;">
+            💡 Wähle einen Ordner wo die fertigen Rapporte automatisch gespeichert werden.
+          </div>
+        </div>
+      </div>
+
       <div class="card">
         <div class="card-header">
           <span class="card-icon">🏗️</span>
@@ -1641,23 +1679,53 @@ window.addEventListener('load', () => {
 let _saveDirectoryHandle = null;
 
 async function selectSaveFolder() {
-  if (!('showDirectoryPicker' in window)) {
-    toast('ℹ️ Auf diesem Gerät nicht verfügbar – Dateien werden in Downloads gespeichert', '');
+  // showDirectoryPicker braucht HTTPS oder localhost
+  const isSecure = location.protocol === 'https:' || location.hostname === 'localhost';
+
+  if (!isSecure || !('showDirectoryPicker' in window)) {
+    // Fallback: Benutzer gibt Pfad als Info ein (wird nur angezeigt, Download geht trotzdem)
+    toast('ℹ️ Ordner-Wahl funktioniert nur wenn die App über HTTPS installiert ist (GitHub/Netlify). Aktuell: Downloads-Ordner.', '');
     return;
   }
+
   try {
     _saveDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
     const name = _saveDirectoryHandle.name;
-    // Ordnername im Button anzeigen
-    document.getElementById('folder-label').textContent = name;
-    document.getElementById('folder-btn').style.background = 'rgba(255,255,255,0.25)';
-    // Im localStorage merken (nur den Namen, Handle muss neu gewählt werden nach Neustart)
+    updateFolderDisplay(name, true);
     localStorage.setItem('hsbau_folder_name', name);
-    toast('✅ Speicherordner: ' + name, 'success');
+    toast('✅ Speicherordner gesetzt: ' + name, 'success');
   } catch(e) {
     if (e.name !== 'AbortError') {
-      toast('❌ Ordner konnte nicht gewählt werden', 'error');
+      console.error('[HSBAU] Ordner-Fehler:', e);
+      toast('❌ Ordner konnte nicht gewählt werden: ' + e.message, 'error');
     }
+  }
+}
+
+function clearSaveFolder() {
+  _saveDirectoryHandle = null;
+  localStorage.removeItem('hsbau_folder_name');
+  updateFolderDisplay(null, false);
+  toast('📥 Speicherort zurückgesetzt auf Downloads', '');
+}
+
+function updateFolderDisplay(name, isCustom) {
+  const label  = document.getElementById('folder-label');
+  const display = document.getElementById('folder-display');
+  const hint   = document.getElementById('folder-hint');
+  if (!label) return;
+  if (isCustom && name) {
+    label.textContent = name;
+    display.style.borderColor = '#E30613';
+    display.style.background  = '#fff5f5';
+    display.querySelector('span').textContent = '📁';
+    if (hint) hint.textContent = '✅ Rapporte werden direkt in "' + name + '" gespeichert.';
+  } else {
+    label.textContent = 'Downloads (Standard)';
+    display.style.borderColor = '#ddd';
+    display.style.background  = '#f5f5f5';
+    display.querySelector('span').textContent = '📥';
+    if (hint) hint.textContent = '💡 Wähle einen Ordner wo die fertigen Rapporte automatisch gespeichert werden.';
   }
 }
 
@@ -1691,12 +1759,14 @@ async function saveToFolder(blob, filename) {
   return false;
 }
 
-// Gespeicherten Ordnernamen beim Start wiederherstellen (Handle selbst geht nicht)
+// Gespeicherten Ordnernamen beim Start anzeigen
 window.addEventListener('load', () => {
   const savedName = localStorage.getItem('hsbau_folder_name');
   if (savedName) {
-    document.getElementById('folder-label').textContent = savedName;
-    document.getElementById('folder-btn').style.background = 'rgba(255,255,255,0.25)';
+    // Name bekannt, aber Handle muss neu gewählt werden
+    updateFolderDisplay(savedName + ' ⚠️ neu wählen', true);
+    document.getElementById('folder-hint').textContent =
+      '⚠️ Bitte Ordner einmal neu wählen (Browser-Sicherheit). Zuletzt: ' + savedName;
   }
 });
 
