@@ -611,31 +611,32 @@
         <div class="card-body">
           <div style="display:flex; gap:10px; align-items:center; flex-wrap:wrap;">
             <div style="flex:1; min-width:200px;">
-              <div style="font-size:12px; color:#888; margin-bottom:4px; text-transform:uppercase; font-weight:600;">Aktueller Ordner</div>
+              <div style="font-size:12px; color:#888; margin-bottom:4px; text-transform:uppercase; font-weight:600;">Gespeichert in</div>
               <div id="folder-display" style="
                 background:#f5f5f5; border:2px solid #ddd; border-radius:8px;
                 padding:10px 14px; font-size:14px; color:#333;
                 min-height:40px; display:flex; align-items:center; gap:8px;
               ">
-                <span style="font-size:18px">📥</span>
+                <span id="folder-icon" style="font-size:18px">📥</span>
                 <span id="folder-label">Downloads (Standard)</span>
               </div>
             </div>
-            <button onclick="selectSaveFolder()" id="folder-btn" style="
-              background:#1A1F2E; color:white; border:none;
-              padding:12px 20px; border-radius:8px;
-              font-size:14px; font-weight:700; cursor:pointer;
-              white-space:nowrap; height:fit-content;
-              display:flex; align-items:center; gap:8px;
-            ">📁 Ordner wählen</button>
-            <button onclick="clearSaveFolder()" title="Zurücksetzen" style="
-              background:#eee; color:#666; border:none;
-              padding:12px 14px; border-radius:8px;
-              font-size:16px; cursor:pointer; height:fit-content;
-            ">✕</button>
+            <div style="display:flex; flex-direction:column; gap:6px; height:fit-content;">
+              <button onclick="selectSaveFolder()" id="folder-btn" style="
+                background:#1A1F2E; color:white; border:none;
+                padding:10px 18px; border-radius:8px;
+                font-size:14px; font-weight:700; cursor:pointer;
+                white-space:nowrap;
+              ">📁 Ordner merken</button>
+              <button onclick="clearSaveFolder()" style="
+                background:#eee; color:#666; border:none;
+                padding:8px 18px; border-radius:8px;
+                font-size:13px; cursor:pointer;
+              ">✕ Zurücksetzen</button>
+            </div>
           </div>
           <div id="folder-hint" style="font-size:12px; color:#888; margin-top:8px;">
-            💡 Wähle einen Ordner wo die fertigen Rapporte automatisch gespeichert werden.
+            💡 Beim Speichern erscheint ein Dialog — dort kannst du Ordner und Dateiname wählen.
           </div>
         </div>
       </div>
@@ -1676,78 +1677,72 @@ window.addEventListener('load', () => {
 // Nutzt die File System Access API (Chrome/Android unterstützt)
 // Fallback: normaler Browser-Download in Downloads-Ordner
 
-let _saveDirectoryHandle = null;
+// Speichert den zuletzt gewählten Ordnernamen (nur zur Anzeige)
+let _lastFolderName = localStorage.getItem('hsbau_folder_name') || null;
 
-async function selectSaveFolder() {
-  // showDirectoryPicker braucht HTTPS oder localhost
-  const isSecure = location.protocol === 'https:' || location.hostname === 'localhost';
-
-  if (!isSecure || !('showDirectoryPicker' in window)) {
-    // Fallback: Benutzer gibt Pfad als Info ein (wird nur angezeigt, Download geht trotzdem)
-    toast('ℹ️ Ordner-Wahl funktioniert nur wenn die App über HTTPS installiert ist (GitHub/Netlify). Aktuell: Downloads-Ordner.', '');
-    return;
-  }
-
-  try {
-    _saveDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
-    const name = _saveDirectoryHandle.name;
-    updateFolderDisplay(name, true);
-    localStorage.setItem('hsbau_folder_name', name);
-    toast('✅ Speicherordner gesetzt: ' + name, 'success');
-  } catch(e) {
-    if (e.name !== 'AbortError') {
-      console.error('[HSBAU] Ordner-Fehler:', e);
-      toast('❌ Ordner konnte nicht gewählt werden: ' + e.message, 'error');
-    }
+function selectSaveFolder() {
+  // showDirectoryPicker: nur Desktop Chrome/Edge
+  // showSaveFilePicker: Android + Desktop Chrome 86+
+  // Wir erklären dem User wie es funktioniert
+  if ('showSaveFilePicker' in window) {
+    toast('✅ Beim Speichern erscheint automatisch ein Speichern-Dialog!', 'success');
+    updateFolderDisplay('Speichern-Dialog (beim Speichern)', true);
+    _lastFolderName = 'dialog';
+    localStorage.setItem('hsbau_folder_name', 'dialog');
+  } else {
+    toast('📥 Dateien werden automatisch in den Downloads-Ordner gespeichert.', '');
   }
 }
 
 function clearSaveFolder() {
-  _saveDirectoryHandle = null;
+  _lastFolderName = null;
   localStorage.removeItem('hsbau_folder_name');
   updateFolderDisplay(null, false);
-  toast('📥 Speicherort zurückgesetzt auf Downloads', '');
+  toast('📥 Speicherort: Downloads', '');
 }
 
 function updateFolderDisplay(name, isCustom) {
-  const label  = document.getElementById('folder-label');
+  const label   = document.getElementById('folder-label');
   const display = document.getElementById('folder-display');
-  const hint   = document.getElementById('folder-hint');
+  const icon    = document.getElementById('folder-icon');
+  const hint    = document.getElementById('folder-hint');
   if (!label) return;
   if (isCustom && name) {
     label.textContent = name;
-    display.style.borderColor = '#E30613';
-    display.style.background  = '#fff5f5';
-    display.querySelector('span').textContent = '📁';
-    if (hint) hint.textContent = '✅ Rapporte werden direkt in "' + name + '" gespeichert.';
+    if (display) { display.style.borderColor = '#E30613'; display.style.background = '#fff5f5'; }
+    if (icon) icon.textContent = '📁';
+    if (hint) hint.textContent = '✅ Beim Speichern erscheint ein Dialog — Ordner und Name frei wählbar.';
   } else {
     label.textContent = 'Downloads (Standard)';
-    display.style.borderColor = '#ddd';
-    display.style.background  = '#f5f5f5';
-    display.querySelector('span').textContent = '📥';
-    if (hint) hint.textContent = '💡 Wähle einen Ordner wo die fertigen Rapporte automatisch gespeichert werden.';
+    if (display) { display.style.borderColor = '#ddd'; display.style.background = '#f5f5f5'; }
+    if (icon) icon.textContent = '📥';
+    if (hint) hint.textContent = '💡 Beim Speichern erscheint ein Dialog — dort kannst du Ordner und Dateiname wählen.';
   }
 }
 
 async function saveToFolder(blob, filename) {
-  // Methode 1: File System Access API (gewählter Ordner)
-  if (_saveDirectoryHandle) {
+  // Methode 1: showSaveFilePicker (Android + Desktop Chrome 86+)
+  // Öffnet einen nativen Speichern-Dialog → User wählt Ordner + Dateiname
+  if ('showSaveFilePicker' in window) {
     try {
-      const fileHandle = await _saveDirectoryHandle.getFileHandle(filename, { create: true });
-      const writable  = await fileHandle.createWritable();
+      const fileHandle = await window.showSaveFilePicker({
+        suggestedName: filename,
+        types: [{
+          description: 'Excel Tabelle',
+          accept: { 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': ['.xlsx'] }
+        }]
+      });
+      const writable = await fileHandle.createWritable();
       await writable.write(blob);
       await writable.close();
-      return true; // Erfolgreich in gewählten Ordner gespeichert
+      // Ordnername merken (für Anzeige)
+      const savedName = fileHandle.name;
+      updateFolderDisplay('Zuletzt: ' + savedName, true);
+      return true;
     } catch(e) {
-      console.warn('[HSBAU] Ordner-Schreiben fehlgeschlagen:', e);
-      // Falls Handle ungültig (nach Neustart) → zurücksetzen
-      if (e.name === 'NotAllowedError' || e.name === 'InvalidStateError') {
-        _saveDirectoryHandle = null;
-        document.getElementById('folder-label').textContent = 'Ordner';
-        document.getElementById('folder-btn').style.background = '';
-        localStorage.removeItem('hsbau_folder_name');
-        toast('⚠️ Ordner-Zugriff abgelaufen – bitte neu wählen. Datei in Downloads gespeichert.', 'error');
-      }
+      if (e.name === 'AbortError') return null; // User hat abgebrochen
+      console.warn('[HSBAU] showSaveFilePicker Fehler:', e);
+      // Fallback auf normalen Download
     }
   }
   // Methode 2: Normaler Browser-Download (Downloads-Ordner)
@@ -1759,14 +1754,13 @@ async function saveToFolder(blob, filename) {
   return false;
 }
 
-// Gespeicherten Ordnernamen beim Start anzeigen
+// Anzeige beim Start initialisieren
 window.addEventListener('load', () => {
-  const savedName = localStorage.getItem('hsbau_folder_name');
-  if (savedName) {
-    // Name bekannt, aber Handle muss neu gewählt werden
-    updateFolderDisplay(savedName + ' ⚠️ neu wählen', true);
-    document.getElementById('folder-hint').textContent =
-      '⚠️ Bitte Ordner einmal neu wählen (Browser-Sicherheit). Zuletzt: ' + savedName;
+  if ('showSaveFilePicker' in window) {
+    // Speichern-Dialog verfügbar → Hinweis aktualisieren
+    const hint = document.getElementById('folder-hint');
+    if (hint) hint.textContent = '💡 Beim Speichern erscheint ein Dialog — Ordner und Dateiname frei wählbar.';
+    updateFolderDisplay('Speichern-Dialog', true);
   }
 });
 
@@ -1910,10 +1904,10 @@ async function saveRapport() {
       localStorage.setItem('hsbau_last_' + rNr, JSON.stringify(draft));
     } catch(e) {}
 
-    const where = inFolder && _saveDirectoryHandle
-      ? '📁 ' + _saveDirectoryHandle.name + '/' + fname
-      : '📥 Downloads/' + fname;
-    toast('✅ ' + where, 'success');
+    if (inFolder !== null) {
+      toast('✅ Gespeichert: ' + fname, 'success');
+    }
+    // inFolder === null bedeutet User hat Speichern-Dialog abgebrochen → kein Toast
   } catch(err) {
     console.error('[HSBAU]', err);
     toast('❌ Fehler: ' + err.message, 'error');
