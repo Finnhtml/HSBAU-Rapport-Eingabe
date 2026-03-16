@@ -567,6 +567,7 @@
   <span class="version">v6.0</span>
   <div class="header-actions">
     <button class="header-btn" onclick="openCalculator()">🧮 Rechner</button>
+    <button class="header-btn" onclick="selectSaveFolder()" title="Speicherordner wählen" id="folder-btn">📁 <span id="folder-label">Ordner</span></button>
     <button class="header-btn save-btn" onclick="saveRapport()">💾 SPEICHERN</button>
   </div>
 </header>
@@ -1166,6 +1167,85 @@
 // ============================================================
 
 const APP_VERSION = "6.0.0";
+
+// ---- UPDATE-CHECK ----
+async function checkForUpdate() {
+  try {
+    // version.json vom gleichen Server laden (kein Cache!)
+    const res = await fetch('./version.json?t=' + Date.now(), {
+      cache: 'no-store',
+      signal: AbortSignal.timeout(5000)
+    });
+    if (!res.ok) return;
+    const data = await res.json();
+    const latest = data.version || '0.0.0';
+
+    // Versionen vergleichen (major.minor.patch)
+    const parse = v => v.split('.').map(Number);
+    const [lMaj, lMin, lPat] = parse(latest);
+    const [cMaj, cMin, cPat] = parse(APP_VERSION);
+
+    const neuer = lMaj > cMaj || (lMaj === cMaj && lMin > cMin) || (lMaj === cMaj && lMin === cMin && lPat > cPat);
+    if (!neuer) return;
+
+    // Update-Banner anzeigen
+    const aenderungen = (data.aenderungen || []).map(a => `• ${a}`).join('
+');
+    const meldung = data.meldung ? `
+${data.meldung}` : '';
+
+    const banner = document.createElement('div');
+    banner.id = 'update-banner';
+    banner.innerHTML = `
+      <div style="
+        position:fixed; top:0; left:0; right:0; z-index:9999;
+        background:#1A1F2E; color:white;
+        padding:12px 16px;
+        display:flex; align-items:center; gap:12px;
+        box-shadow:0 2px 12px rgba(0,0,0,0.3);
+        font-family:'Segoe UI',sans-serif; font-size:14px;
+      ">
+        <span style="font-size:20px">🆕</span>
+        <div style="flex:1">
+          <b>Neue Version verfügbar: v${latest}</b>${meldung ? `<br><span style="opacity:0.8;font-size:12px">${meldung}</span>` : ''}
+        </div>
+        <button onclick="doUpdate()" style="
+          background:#E30613; color:white; border:none;
+          padding:8px 16px; border-radius:6px;
+          font-weight:700; cursor:pointer; font-size:13px;
+          white-space:nowrap;
+        ">Jetzt aktualisieren</button>
+        <button onclick="document.getElementById('update-banner').remove()" style="
+          background:transparent; color:white; border:1px solid rgba(255,255,255,0.3);
+          padding:8px 12px; border-radius:6px;
+          cursor:pointer; font-size:13px;
+        ">Später</button>
+      </div>
+    `;
+    document.body.prepend(banner);
+
+  } catch(e) {
+    // Kein Internet oder Server nicht erreichbar — still ignorieren
+  }
+}
+
+async function doUpdate() {
+  // Service Worker Cache leeren → Browser lädt alles neu
+  if ('serviceWorker' in navigator && 'caches' in window) {
+    const keys = await caches.keys();
+    await Promise.all(keys.map(k => caches.delete(k)));
+    // Service Worker neu starten
+    const regs = await navigator.serviceWorker.getRegistrations();
+    await Promise.all(regs.map(r => r.unregister()));
+  }
+  // Seite neu laden (lädt neue Version vom Server)
+  window.location.reload(true);
+}
+
+// Update-Check 3 Sekunden nach dem Start (damit die App erst vollständig lädt)
+window.addEventListener('load', () => {
+  setTimeout(checkForUpdate, 3000);
+});
 const RAPPORT_SERVER = "https://hsbau-rapport-server.onrender.com";
 
 // ---- PAGE NAVIGATION ----
@@ -1177,6 +1257,15 @@ function showPage(name, btn) {
   document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
   if (btn) btn.classList.add('active');
   currentPage = name;
+  // Signature-Canvas Resize wenn Bilder-Seite geöffnet wird
+  if (name === 'bilder') {
+    setTimeout(() => {
+      ['sig-huber','sig-kunde'].forEach(id => {
+        const c = document.getElementById(id);
+        if (c && c._sigResize) c._sigResize();
+      });
+    }, 50);
+  }
 }
 
 function showPageMobile(name, btn) {
@@ -1440,19 +1529,7 @@ function clearSig(id) {
 setupSig('sig-huber');
 setupSig('sig-kunde');
 
-// Resize der Signature-Canvas wenn die Bilder-Seite geöffnet wird
-const _origShowPage = showPage;
-showPage = function(name, btn) {
-  _origShowPage(name, btn);
-  if (name === 'bilder') {
-    setTimeout(() => {
-      ['sig-huber','sig-kunde'].forEach(id => {
-        const c = document.getElementById(id);
-        if (c && c._sigResize) c._sigResize();
-      });
-    }, 50);
-  }
-};
+// Signature-Resize ist direkt in showPage() integriert
 
 // ---- CALCULATOR ----
 let calcState = { expr: '', newNum: true };
@@ -1539,7 +1616,6 @@ async function getPyodide() {
     return _pyodide;
   }
   _pyodideLoading = true;
-  toast('⏳ Python wird geladen (einmalig ~5s)...', '');
   _pyodide = await loadPyodide({
     indexURL: 'https://cdn.jsdelivr.net/pyodide/v0.25.1/full/'
   });
@@ -1550,13 +1626,78 @@ async function getPyodide() {
   await micropip.install('pillow');
   _pyodide.runPython("\nimport openpyxl, io, base64, json\nfrom openpyxl.drawing.image import Image as XLImage\nfrom PIL import Image as PILImage\n\ndef write_cell(ws, cell_ref, value):\n    if value is None or value == '' or value == 'null':\n        return\n    try:\n        if isinstance(cell_ref, tuple):\n            cell = ws.cell(row=cell_ref[0], column=cell_ref[1])\n        else:\n            cell = ws[cell_ref]\n        import openpyxl.cell.cell\n        if isinstance(cell, openpyxl.cell.cell.MergedCell):\n            for m_range in ws.merged_cells.ranges:\n                if cell.coordinate in m_range:\n                    ws.cell(row=m_range.min_row, column=m_range.min_col).value = value\n                    return\n        cell.value = value\n    except Exception as e:\n        pass\n\ndef generate(data_json, template_b64):\n    data = json.loads(data_json)\n    template_bytes = base64.b64decode(template_b64)\n    wb = openpyxl.load_workbook(io.BytesIO(template_bytes))\n    ws = wb.active\n\n    s = data.get('stammdaten', {})\n    a = data.get('arbeit', {})\n    z = data.get('zusatzleistungen', {})\n    u = data.get('umstellen', {})\n\n    # Stammdaten\n    write_cell(ws, 'J2', s.get('firma'))\n    write_cell(ws, 'J3', s.get('name'))\n    write_cell(ws, 'J4', s.get('telefon'))\n    write_cell(ws, 'P2', s.get('rapportNr'))\n    write_cell(ws, 'P3', s.get('auftragNr'))\n    write_cell(ws, 'P4', s.get('datum'))\n    write_cell(ws, 'B6', s.get('baustelle'))\n    write_cell(ws, 'H6', s.get('baustelleNr'))\n    write_cell(ws, 'J6', s.get('adresse'))\n\n    # Arbeit & Zeit\n    write_cell(ws, 'A9',  a.get('arbeiten'))\n    write_cell(ws, 'N8',  a.get('geschoss'))\n    write_cell(ws, 'P8',  a.get('etappe'))\n    write_cell(ws, 'N9',  a.get('bauteil'))\n    write_cell(ws, 'P9',  a.get('besonderes'))\n    write_cell(ws, 'H12', a.get('zeitVon'))\n    write_cell(ws, 'I12', a.get('zeitBis'))\n\n    # Installation\n    write_cell(ws, 'K13', z.get('instBohren'))\n    write_cell(ws, 'K14', z.get('instFraesen'))\n    write_cell(ws, 'F15', z.get('geruest'))\n\n    # Schutz\n    write_cell(ws, 'K16', z.get('abdecken'))\n    write_cell(ws, 'K17', z.get('spritz'))\n    write_cell(ws, 'K18', z.get('kantholz'))\n    write_cell(ws, 'K19', z.get('rueckWand'))\n    write_cell(ws, 'K20', z.get('rueckDecke'))\n    write_cell(ws, 'K21', z.get('wasserMit'))\n    write_cell(ws, 'K22', z.get('wasserOhne'))\n\n    # Entsorgung\n    write_cell(ws, 'K23', z.get('betonTrans'))\n    write_cell(ws, 'K24', z.get('minimulde'))\n    write_cell(ws, 'K25', z.get('muldeBeton'))\n    write_cell(ws, 'K26', z.get('muldeMauer'))\n\n    # Maschinen\n    write_cell(ws, 'K27', z.get('spitz'))\n    write_cell(ws, 'K28', z.get('abbruch'))\n    write_cell(ws, 'K29', z.get('trenn'))\n    write_cell(ws, 'K30', z.get('notstrom'))\n\n    # Umstellen Bohrung\n    write_cell(ws, 'K31', u.get('bohrBohrloch'))\n    write_cell(ws, 'K32', u.get('bohr50m'))\n    write_cell(ws, 'K33', u.get('bohrEtage'))\n    write_cell(ws, 'K34', u.get('bohrGebaeude'))\n\n    # Umstellen Fraesen\n    write_cell(ws, 'K35', u.get('fraesSchnitt'))\n    write_cell(ws, 'K36', u.get('fraes50m'))\n    write_cell(ws, 'K37', u.get('fraesEtage'))\n    write_cell(ws, 'K38', u.get('fraesGebaeude'))\n\n    # Eisen\n    write_cell(ws, 'D40', z.get('eisenBem1')); write_cell(ws, 'K40', z.get('eisenCm1'))\n    write_cell(ws, 'D41', z.get('eisenBem2')); write_cell(ws, 'K41', z.get('eisenCm2'))\n    write_cell(ws, 'D42', z.get('eisenBem3')); write_cell(ws, 'K42', z.get('eisenCm3'))\n\n    # Notizen\n    write_cell(ws, 'Q52', data.get('notizen'))\n\n    # Datum Unterschrift\n    write_cell(ws, 'W69', data.get('sigDatum'))\n\n    # Bohrungen (Zeilen 47-56)\n    for i, row in enumerate(data.get('bohrungen', [])):\n        r = 47 + i\n        if r > 56: break\n        write_cell(ws, (r,1), row.get('dm'))\n        write_cell(ws, (r,2), row.get('st'))\n        ort = row.get('ort','')\n        write_cell(ws, (r,3), 'X' if ort=='B' else '')\n        write_cell(ws, (r,4), 'X' if ort=='M' else '')\n        write_cell(ws, (r,5), row.get('vert'))\n        write_cell(ws, (r,6), row.get('hori'))\n        write_cell(ws, (r,7), row.get('uk'))\n        write_cell(ws, (r,8), row.get('schraeg'))\n        write_cell(ws, (r,9), row.get('sack'))\n\n    # Fraesungen (Zeilen 59-68)\n    for i, row in enumerate(data.get('fraesungen', [])):\n        r = 59 + i\n        if r > 68: break\n        mat = row.get('material','')\n        write_cell(ws, (r,1), row.get('st'))\n        write_cell(ws, (r,2), row.get('ort'))\n        write_cell(ws, (r,3), 'B' if mat=='Beton' else '')\n        write_cell(ws, (r,4), 'M' if mat=='Mauerwerk' else '')\n        write_cell(ws, (r,5), row.get('laenge'))\n        write_cell(ws, (r,6), row.get('tiefe'))\n\n    # Signaturen als Bild\n    for sig_b64, anchor in [\n        (data.get('signaturen',{}).get('huber'), 'Q66'),\n        (data.get('signaturen',{}).get('kunde'), 'U66'),\n    ]:\n        if not sig_b64 or sig_b64 == 'null':\n            continue\n        try:\n            raw = base64.b64decode(sig_b64.split(',')[-1])\n            img_pil = PILImage.open(io.BytesIO(raw)).convert('RGBA')\n            bio = io.BytesIO()\n            img_pil.save(bio, format='PNG')\n            bio.seek(0)\n            img = XLImage(bio)\n            img.anchor = anchor\n            img.width = 200; img.height = 55\n            ws.add_image(img)\n        except:\n            pass\n\n    out = io.BytesIO()\n    wb.save(out)\n    out.seek(0)\n    return base64.b64encode(out.read()).decode()\n");
   _pyodideReady = true;
-  toast('✅ Python bereit', 'success');
   return _pyodide;
 }
 
 // Pyodide beim Laden der Seite im Hintergrund vorbereiten
 window.addEventListener('load', () => {
   setTimeout(() => getPyodide().catch(e => console.warn('Pyodide preload:', e)), 1000);
+});
+
+// ---- SPEICHERORDNER ----
+// Nutzt die File System Access API (Chrome/Android unterstützt)
+// Fallback: normaler Browser-Download in Downloads-Ordner
+
+let _saveDirectoryHandle = null;
+
+async function selectSaveFolder() {
+  if (!('showDirectoryPicker' in window)) {
+    toast('ℹ️ Auf diesem Gerät nicht verfügbar – Dateien werden in Downloads gespeichert', '');
+    return;
+  }
+  try {
+    _saveDirectoryHandle = await window.showDirectoryPicker({ mode: 'readwrite' });
+    const name = _saveDirectoryHandle.name;
+    // Ordnername im Button anzeigen
+    document.getElementById('folder-label').textContent = name;
+    document.getElementById('folder-btn').style.background = 'rgba(255,255,255,0.25)';
+    // Im localStorage merken (nur den Namen, Handle muss neu gewählt werden nach Neustart)
+    localStorage.setItem('hsbau_folder_name', name);
+    toast('✅ Speicherordner: ' + name, 'success');
+  } catch(e) {
+    if (e.name !== 'AbortError') {
+      toast('❌ Ordner konnte nicht gewählt werden', 'error');
+    }
+  }
+}
+
+async function saveToFolder(blob, filename) {
+  // Methode 1: File System Access API (gewählter Ordner)
+  if (_saveDirectoryHandle) {
+    try {
+      const fileHandle = await _saveDirectoryHandle.getFileHandle(filename, { create: true });
+      const writable  = await fileHandle.createWritable();
+      await writable.write(blob);
+      await writable.close();
+      return true; // Erfolgreich in gewählten Ordner gespeichert
+    } catch(e) {
+      console.warn('[HSBAU] Ordner-Schreiben fehlgeschlagen:', e);
+      // Falls Handle ungültig (nach Neustart) → zurücksetzen
+      if (e.name === 'NotAllowedError' || e.name === 'InvalidStateError') {
+        _saveDirectoryHandle = null;
+        document.getElementById('folder-label').textContent = 'Ordner';
+        document.getElementById('folder-btn').style.background = '';
+        localStorage.removeItem('hsbau_folder_name');
+        toast('⚠️ Ordner-Zugriff abgelaufen – bitte neu wählen. Datei in Downloads gespeichert.', 'error');
+      }
+    }
+  }
+  // Methode 2: Normaler Browser-Download (Downloads-Ordner)
+  const a = document.createElement('a');
+  a.href = URL.createObjectURL(blob);
+  a.download = filename;
+  a.click();
+  URL.revokeObjectURL(a.href);
+  return false;
+}
+
+// Gespeicherten Ordnernamen beim Start wiederherstellen (Handle selbst geht nicht)
+window.addEventListener('load', () => {
+  const savedName = localStorage.getItem('hsbau_folder_name');
+  if (savedName) {
+    document.getElementById('folder-label').textContent = savedName;
+    document.getElementById('folder-btn').style.background = 'rgba(255,255,255,0.25)';
+  }
 });
 
 // ---- SAVE / EXPORT ----
@@ -1670,7 +1811,8 @@ async function saveRapport() {
   };
 
   try {
-    toast('📊 Rapport wird erstellt...', '');
+    if (!_pyodideReady) toast('⏳ Bitte warten...', '');
+    else toast('📊 Rapport wird erstellt...', '');
     const py = await getPyodide();
 
     // Daten an Python übergeben und generate() aufrufen
@@ -1689,9 +1831,7 @@ async function saveRapport() {
     const bytes  = new Uint8Array(binStr.length);
     for (let i=0; i<binStr.length; i++) bytes[i] = binStr.charCodeAt(i);
     const blob = new Blob([bytes], {type:'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'});
-    const a = document.createElement('a');
-    a.href = URL.createObjectURL(blob); a.download = fname; a.click();
-    URL.revokeObjectURL(a.href);
+    const inFolder = await saveToFolder(blob, fname);
 
     // Backup
     try {
@@ -1700,7 +1840,10 @@ async function saveRapport() {
       localStorage.setItem('hsbau_last_' + rNr, JSON.stringify(draft));
     } catch(e) {}
 
-    toast('✅ ' + fname, 'success');
+    const where = inFolder && _saveDirectoryHandle
+      ? '📁 ' + _saveDirectoryHandle.name + '/' + fname
+      : '📥 Downloads/' + fname;
+    toast('✅ ' + where, 'success');
   } catch(err) {
     console.error('[HSBAU]', err);
     toast('❌ Fehler: ' + err.message, 'error');
