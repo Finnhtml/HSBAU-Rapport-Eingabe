@@ -1,7 +1,7 @@
 // HSBAU Rapport-Manager - Service Worker
 // Ermöglicht Offline-Nutzung nach erstem Laden
 
-const CACHE_NAME = 'hsbau-rapport-v1';
+const CACHE_NAME = 'hsbau-rapport-v2';
 
 // Dateien die gecacht werden sollen
 const CACHE_FILES = [
