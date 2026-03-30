@@ -265,6 +265,12 @@
   input[type="date"] { padding: 9px 2px; }
 
   /* ---- TABLE ROWS (Bohrung/Fräsen) ---- */
+  :root{
+    --bohr-cols: 70px 50px 60px 70px 70px 55px 60px 55px 40px;
+    --bohr-zuschlaege-cols: 55px 60px 55px;
+    --fraes-cols: 50px 1fr 100px 80px 70px 90px 90px 40px;
+    --fraes-dim-cols: 80px 70px;
+  }
   .table-header {
     display: grid;
     gap: 6px;
@@ -275,11 +281,72 @@
     font-size: 11px;
     font-weight: 700;
     color: var(--text-muted);
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
+    text-transform: none;
+    letter-spacing: 0.2px;
+    align-items: end;
   }
-  .bohr-header { grid-template-columns: 70px 50px 60px 70px 70px 55px 60px 55px 40px; }
-  .fraes-header { grid-template-columns: 50px 1fr 100px 80px 70px 40px; }
+  .table-header span { display: flex; flex-direction: column; line-height: 1.05; min-width: 0; }
+  .table-header span > span { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .table-header .th-sub { font-size: 10px; font-weight: 700; opacity: 0.85; }
+  .bohr-header { grid-template-columns: var(--bohr-cols); }
+  .fraes-header { grid-template-columns: var(--fraes-cols); position: relative; padding-top: 26px; }
+  .fraes-header::before {
+    content: 'Fräsen';
+    position: absolute;
+    top: 6px; left: 0; right: 0;
+    text-align: center;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 0.2px;
+    pointer-events: none;
+  }
+
+  /* Fräsen: Länge×Tiefe Gruppierung im Header */
+  .fraes-header .th-dim-group {
+    grid-column: 4 / span 2;
+    display: grid;
+    grid-template-columns: var(--fraes-dim-cols);
+    gap: 6px;
+    align-items: end;
+  }
+  .fraes-header .th-dim-group > .th-group-title {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-weight: 800;
+    color: var(--text-muted);
+  }
+  .fraes-header .th-dim-group > .th {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+    min-width: 0;
+  }
+
+  /* Bohrung: Zuschläge-Gruppierung im Header */
+  .bohr-header .th-group {
+    grid-column: 6 / span 3;
+    display: grid;
+    grid-template-columns: var(--bohr-zuschlaege-cols);
+    gap: 6px;
+    align-items: end;
+  }
+  .bohr-header .th-group > .th-group-title {
+    grid-column: 1 / -1;
+    text-align: center;
+    font-weight: 800;
+    color: var(--text-muted);
+    letter-spacing: 0.2px;
+  }
+  .bohr-header .th-group > .th {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.05;
+    min-width: 0;
+  }
+
+  /* Tabellen sollen nie überlappen: bei Bedarf horizontal scrollen */
+  .card-body { overflow-x: auto; }
+  .table-header, .table-row { min-width: 720px; }
 
   .table-row {
     display: grid;
@@ -292,8 +359,8 @@
     border-left: 3px solid var(--red);
     box-shadow: 0 1px 4px rgba(0,0,0,0.05);
   }
-  .bohr-row { grid-template-columns: 70px 50px 60px 70px 70px 55px 60px 55px 40px; }
-  .fraes-row { grid-template-columns: 50px 1fr 100px 80px 70px 40px; }
+  .bohr-row { grid-template-columns: var(--bohr-cols); }
+  .fraes-row { grid-template-columns: var(--fraes-cols); }
 
   .table-row input, .table-row select {
     border: none;
@@ -558,13 +625,19 @@
 
   /* ---- MOBILE RESPONSIVE ---- */
   @media (max-width: 768px) {
+    :root{
+      --bohr-cols: 60px 44px 70px 60px 60px 52px 55px 52px 36px;
+      --bohr-zuschlaege-cols: 52px 55px 52px;
+      --fraes-cols: 44px 1fr 90px 70px 60px 78px 78px 36px;
+      --fraes-dim-cols: 70px 60px;
+    }
     .sidebar { display: none; }
     .app-layout { flex-direction: column; }
     .main-content { padding: 14px; }
     .form-grid { grid-template-columns: 1fr; }
     .form-grid.three, .form-grid.four { grid-template-columns: 1fr 1fr; }
-    .bohr-header, .bohr-row { grid-template-columns: 60px 44px 55px 60px 60px 48px 55px 48px 36px; font-size: 12px; }
-    .fraes-header, .fraes-row { grid-template-columns: 44px 1fr 90px 70px 60px 36px; }
+    .bohr-header, .bohr-row { grid-template-columns: var(--bohr-cols); font-size: 12px; }
+    .fraes-header, .fraes-row { grid-template-columns: var(--fraes-cols); }
     .mobile-nav {
       display: flex !important;
       position: fixed;
@@ -607,6 +680,93 @@
     height: 2px;
     background: var(--red);
     border-radius: 2px 2px 0 0;
+  }
+
+  /* ---- FAQ ACCORDION ---- */
+  .faq-container {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .faq-item {
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--white);
+    overflow: hidden;
+    box-shadow: var(--shadow);
+    transition: all 0.2s ease;
+  }
+  .faq-item:hover {
+    box-shadow: var(--shadow-card);
+  }
+  .faq-question {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: linear-gradient(135deg, rgba(227, 6, 19, 0.05) 0%, rgba(227, 6, 19, 0.02) 100%);
+    border-left: 4px solid var(--red);
+    cursor: pointer;
+    font-weight: 600;
+    color: var(--text);
+    user-select: none;
+    transition: background 0.15s;
+  }
+  .faq-question:hover {
+    background: linear-gradient(135deg, rgba(227, 6, 19, 0.12) 0%, rgba(227, 6, 19, 0.08) 100%);
+  }
+  .faq-question-text {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex: 1;
+    font-size: 15px;
+  }
+  .faq-question-icon {
+    font-size: 18px;
+    flex-shrink: 0;
+  }
+  .faq-toggle {
+    font-size: 20px;
+    color: var(--red);
+    transition: transform 0.2s;
+    flex-shrink: 0;
+  }
+  .faq-item.open .faq-toggle {
+    transform: rotate(180deg);
+  }
+  .faq-answer {
+    max-height: 0;
+    overflow: hidden;
+    transition: max-height 0.25s ease;
+  }
+  .faq-item.open .faq-answer {
+    max-height: 500px;
+  }
+  .faq-answer-text {
+    padding: 16px;
+    color: var(--text-muted);
+    line-height: 1.6;
+    font-size: 14px;
+  }
+  .faq-answer-text strong {
+    color: var(--text);
+  }
+  .faq-answer-text code {
+    background: rgba(227, 6, 19, 0.08);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-family: 'Courier New', monospace;
+    color: var(--red);
+  }
+  .faq-tip {
+    margin-top: 10px;
+    padding: 10px;
+    background: rgba(16, 185, 129, 0.08);
+    border-left: 3px solid var(--success);
+    border-radius: 4px;
+    font-size: 12px;
+    color: #047857;
   }
 
   /* ---- PRINT ---- */
@@ -656,6 +816,9 @@
     </button>
     <button class="nav-btn" onclick="showPage('bilder',this)">
       <span class="nav-icon">🖼️</span> Zusätzliches & Visum
+    </button>
+    <button class="nav-btn" onclick="showPage('hilfe',this)">
+      <span class="nav-icon">❓</span> Hilfe & FAQ
     </button>
   </nav>
 
@@ -1014,9 +1177,18 @@
         </div>
         <div class="card-body">
           <div class="table-header bohr-header">
-            <span>Ø mm</span><span>St.</span><span>Ort</span>
-            <span>Vert. cm</span><span>Hori. cm</span><span>ÜK</span>
-            <span>Schräg</span><span>Sack</span><span></span>
+            <span title="Bohrdurchmesser"><span>Ø</span><span class="th-sub">mm</span></span>
+            <span title="Anzahl Stück"><span>St.</span></span>
+            <span title="Material (Beton oder Mauerwerk)"><span>Material</span><span class="th-sub">Beton/Mauerw.</span></span>
+            <span title="Vertikale Länge"><span>Vertikal</span><span class="th-sub">cm</span></span>
+            <span title="Horizontale Länge"><span>Horizontal</span><span class="th-sub">cm</span></span>
+            <span class="th-group" title="Zuschläge">
+              <span class="th-group-title">Zuschläge</span>
+              <span class="th" title="ÜK (Überkante)"><span>ü. Kopf</span></span>
+              <span class="th" title="Schrägbohrung Zuschlag"><span>schräg</span></span>
+              <span class="th" title="Sackbohrung Zuschlag"><span>Sackb.</span></span>
+            </span>
+            <span></span>
           </div>
           <div id="bohr-list"></div>
           <button class="btn btn-add" onclick="addBohrRow()">+ Bohrung hinzufügen</button>
@@ -1031,11 +1203,233 @@
         </div>
         <div class="card-body">
           <div class="table-header fraes-header">
-            <span>St.</span><span>Ort</span><span>Material</span>
-            <span>Länge cm</span><span>Tiefe cm</span><span></span>
+            <span title="Anzahl Stück"><span>St.</span></span>
+            <span title="Ort / Bereich"><span>Ort</span></span>
+            <span title="Material (Beton oder Mauerwerk)"><span>Material</span><span class="th-sub">Beton/Mauerw.</span></span>
+            <span class="th-dim-group" title="Länge × Tiefe">
+              <span class="th-group-title">Länge × Tiefe</span>
+              <span class="th" title="Länge"><span>Länge</span><span class="th-sub">cm</span></span>
+              <span class="th" title="Tiefe"><span>Tiefe</span><span class="th-sub">cm</span></span>
+            </span>
+            <span title="Zuschlag schräg"><span>schräg</span><span class="th-sub">m'</span></span>
+            <span title="Zuschlag bündig"><span>Bündig</span><span class="th-sub">m'</span></span>
+            <span></span>
           </div>
           <div id="fraes-list"></div>
           <button class="btn btn-add" onclick="addFraesRow()">+ Fräsung hinzufügen</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ====== PAGE: HILFE & FAQ ====== -->
+    <div class="page" id="page-hilfe">
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">❓</span>
+          <h3>Häufig gestellte Fragen</h3>
+        </div>
+        <div class="card-body">
+          <div class="faq-container">
+            <!-- FAQ 1 -->
+            <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">
+                <div class="faq-question-text">
+                  <span class="faq-question-icon">💾</span>
+                  <span>Wie speichern und exportiere ich meinen Rapport?</span>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-text">
+                  Drücke den roten Button <strong>"💾 SPEICHERN"</strong> in der oberen rechten Ecke oder oben in der Mobil-Navigation. Dein Rapport wird automatisch als Excel-Datei (<code>.xlsx</code>) heruntergeladen und in deinem Browser-Download-Ordner gespeichert.
+                  <div class="faq-tip">💡 Tipp: Auf Tablets findest du die Datei normalerweise unter <strong>Dateienmanager → Downloads</strong>.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ 2 -->
+            <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">
+                <div class="faq-question-text">
+                  <span class="faq-question-icon">📁</span>
+                  <span>Wo finde ich meine heruntergeladenen Rapporte?</span>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-text">
+                  Öffne die <strong>Dateien-App</strong> auf deinem Tablet oder Handy und navigiere zum Ordner <code>Downloads</code>. Android speichert automatisch alle heruntergeladenen Dateien dort. Du kannst die Excel-Dateien von dort aus per E-Mail versenden oder mit anderen Apps öffnen.
+                  <div class="faq-tip">💡 Tipp: In den Chrome-Einstellungen kannst du deinen Standard-Download-Ordner ändern.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ 3 -->
+            <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">
+                <div class="faq-question-text">
+                  <span class="faq-question-icon">⭐</span>
+                  <span>Wozu dienen die Pflichtfelder mit Sternchen (*)?</span>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-text">
+                  Felder mit einem roten Sternchen (<span class="req">*</span>) sind <strong>Pflichtfelder</strong>. Sie müssen ausgefüllt werden, damit dein Rapport vollständig und gültig ist. Typische Pflichtfelder sind: <strong>Firma, Name, Rapport-Nummer, Auftrag-Nr., Datum</strong> und <strong>Visumsfeld/Unterschriften</strong>.
+                  <div class="faq-tip">💡 Tipp: Überprüfe alle Pflichtfelder vor dem Speichern, um sicherzustellen, dass der Rapport korrekt ist.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ 4 -->
+            <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">
+                <div class="faq-question-text">
+                  <span class="faq-question-icon">✍️</span>
+                  <span>Wie verwende ich die Unterschrifts-Funktion?</span>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-text">
+                  Gehe zur Seite <strong>"Zusätzliches & Visum"</strong> und scrolla nach unten zum Bereich "Visumsfeld / Unterschriften". Dort findest du zwei Unterschrifts-Boxen:
+                  <ul style="margin-top: 8px; margin-left: 20px; list-style: disc; color: var(--text);">
+                    <li><strong>Visum Huberstraub AG</strong> - Unterschrift des Huberstraub-Mitarbeiters</li>
+                    <li><strong>Visum Kunde</strong> - Unterschrift des Kunden/Projektverwaltung</li>
+                  </ul>
+                  <p style="margin-top: 8px;">Du kannst direkt mit deinem Finger oder einem Stylus in die Boxen unterschreiben. Mit dem "Löschen"-Button kannst du die Signatur neu schreiben.</p>
+                  <div class="faq-tip">💡 Tipp: Unterschreibe deutlich auf einem Tablet für beste Ergebnisse.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ 5 -->
+            <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">
+                <div class="faq-question-text">
+                  <span class="faq-question-icon">✏️</span>
+                  <span>Kann ich meine Eingaben später ändern oder korrigieren?</span>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-text">
+                  <strong>Ja!</strong> Du kannst jederzeit änderungen vornehmen. Öffne eine bereits gespeicherte Excel-Datei und beende sie in der App, bearbeite die Felder, und speichere erneut. Die App überschreibt die alte Version mit getätigten Änderungen.
+                  <div class="faq-tip">💡 Tipp: Speichere regelmäßig während der Arbeit, um Datenverlust zu vermeiden. Arbeite mit Backups, falls du später zu einem früheren Stand zurückkehren möchtest.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ 6 -->
+            <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">
+                <div class="faq-question-text">
+                  <span class="faq-question-icon">⏱️</span>
+                  <span>Wie lange dauert das Speichern eines Rapports?</span>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-text">
+                  Das Speichern ist normalerweise <strong>sehr schnell</strong> (unter 1 Sekunde). Die Excel-Datei wird in deinem Browser verarbeitet und dann heruntergeladen. Wenn du viele Bohrungen/Fräsungen oder Notizen hast, kann es ein paar Sekunden länger dauern. Der Download startet automatisch.
+                  <div class="faq-tip">💡 Tipp: Warte kurz nach dem Drücken des Speichern-Buttons, bevor du die App schließt.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ 7 -->
+            <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">
+                <div class="faq-question-text">
+                  <span class="faq-question-icon">🔢</span>
+                  <span>Was ist die Rapport-Nummer und wie wird sie vergeben?</span>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-text">
+                  Die <strong>Rapport-Nummer</strong> ist eine eindeutige, automatisch vergebene Identifikationsnummer für jeden Bericht. Sie wird basierend auf deiner Personalnummer und dem Gerät, das du verwendest, generiert. Du kannst die Nummer am Anfang (bei der Eingabe der Personalnummer) automatisch abrufen oder manuell anpassen.
+                  <div class="faq-tip">💡 Tipp: Die Rapport-Nummer sorgt dafür, dass jeder Rapport eindeutig zuordenbar ist.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ 8 -->
+            <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">
+                <div class="faq-question-text">
+                  <span class="faq-question-icon">📸</span>
+                  <span>Wie kann ich Fotos oder Bilder zur Dokumentation hinzufügen?</span>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-text">
+                  Diese App konzentriert sich auf die Textdokumentation. Fotos können nicht direkt in der App gespeichert werden. <strong>Empfehlung:</strong> Mache Fotos separat mit deiner Kamera und speichere sie mit einer aussagekräftigen Benennung (z.B. "Baustelle_2026-03-15_Bohrloch1.jpg"). Verfahre diese Fotos nach der Speicherung des Rapports in den gleichen Ordner wie deine Excel-Datei.
+                  <div class="faq-tip">💡 Tipp: Speichere Fotos zusammen mit deinem Bericht ab, damit alles an einem Ort ist.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ 9 -->
+            <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">
+                <div class="faq-question-text">
+                  <span class="faq-question-icon">🧮</span>
+                  <span>Wie nutze ich den integrierten Rechner und wofür ist er?</span>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-text">
+                  Der Rechner ist zwei Funktionen bereitgestellt: 
+                  <ul style="margin-top: 8px; margin-left: 20px; list-style: disc; color: var(--text);">
+                    <li><strong>🧮 Grundrechner:</strong> Ein einfacher Taschenrechner für Basic-Mathematik (+ − × ÷ %)</li>
+                    <li><strong>🏗️ Baurechner:</strong> Spezialisierte Berechnungen für Bauprojekte (Fläche, Umfang, Volumen, Betonmenge, Umrechnungen)</li>
+                  </ul>
+                  <p style="margin-top: 8px;">Öffne den Rechner mit dem 🧮 Button oben rechts oder in der Mobil-Navigation.</p>
+                  <div class="faq-tip">💡 Tipp: Der Baurechner ist besonders nützlich für schnelle Berechnungen auf der Baustelle.</div>
+                </div>
+              </div>
+            </div>
+
+            <!-- FAQ 10 -->
+            <div class="faq-item">
+              <div class="faq-question" onclick="toggleFAQ(this)">
+                <div class="faq-question-text">
+                  <span class="faq-question-icon">🔧</span>
+                  <span>Funktioniert die App auch ohne Internet?</span>
+                </div>
+                <span class="faq-toggle">▼</span>
+              </div>
+              <div class="faq-answer">
+                <div class="faq-answer-text">
+                  <strong>Ja!</strong> Die App funktioniert vollständig offline. Du kannst alle Rapporte ausfüllen, ohne Internet zu haben. Die App wird wie eine native App auf deinem Tablet/Handy installiert (PWA). 
+                  <p style="margin-top: 8px;"><strong>Wichtig:</strong> Wenn du einen neuen Rapport erstellst und eine automatische Rapport-Nummer benötigst, brauchst du kurzzeitig Internet (für die Server-Anfrage). Aber die Eingabe selbst funktioniert komplett offline.</p>
+                  <div class="faq-tip">💡 Tipp: Perfekt für Baustellen ohne WLAN-Verbindung!</div>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- Zusätzliche Informationen -->
+      <div class="card">
+        <div class="card-header">
+          <span class="card-icon">ℹ️</span>
+          <h3>Weitere Infos</h3>
+        </div>
+        <div class="card-body">
+          <div style="line-height: 1.7; color: var(--text-muted); font-size: 14px;">
+            <p><strong>App-Version:</strong> v6.0.0</p>
+            <p><strong>Hersteller:</strong> Huberstraub AG</p>
+            <p><strong>Funktioniert auf:</strong> Android-Tablets, iPhones, iPads, Desktop-Browser</p>
+            <p style="margin-top: 10px; font-size: 12px; color: #999;">
+              Diese App ist ein Web-basiertes Rapport-Management-System für Baustellen. Alle Daten werden lokal im Browser verarbeitet und gespeichert.
+            </p>
+          </div>
         </div>
       </div>
     </div>
@@ -1111,6 +1505,9 @@
   </button>
   <button class="mobile-nav-btn" onclick="showPageMobile('bilder',this)">
     <span class="mn-icon">🖼️</span><span>Bilder</span>
+  </button>
+  <button class="mobile-nav-btn" onclick="showPageMobile('hilfe',this)">
+    <span class="mn-icon">❓</span><span>Hilfe</span>
   </button>
   <button class="mobile-nav-btn" onclick="openCalculator()">
     <span class="mn-icon">🧮</span><span>Rechner</span>
@@ -1345,6 +1742,12 @@ function toast(msg, type = '') {
   setTimeout(() => t.className = 'toast', 2800);
 }
 
+// ---- FAQ ACCORDION ----
+function toggleFAQ(element) {
+  const faqItem = element.closest('.faq-item');
+  faqItem.classList.toggle('open');
+}
+
 // ---- AUTO DATE ----
 (function() {
   const today = new Date().toISOString().split('T')[0];
@@ -1410,26 +1813,37 @@ function fetchRapportNummer(personNr) {
 let bohrCount = 0;
 
 function addBohrRow() {
+  if (document.querySelectorAll('#bohr-list .bohr-row').length >= 10) {
+    alert('Maximal 10× Bohren möglich (mehr hat in der Tabelle keinen Platz).');
+    return;
+  }
   bohrCount++;
   const id = 'bohr_' + bohrCount;
   const div = document.createElement('div');
   div.className = 'table-row bohr-row';
   div.id = id;
   div.innerHTML = `
-    <input type="number" placeholder="Ø mm" min="1" class="bohr-dm">
-    <input type="number" placeholder="St." min="1" class="bohr-st">
-    <select class="bohr-ort"><option value="B">B</option><option value="M">M</option></select>
-    <input type="number" placeholder="cm" min="0" class="bohr-vert">
-    <input type="number" placeholder="cm" min="0" class="bohr-hori">
-    <input type="number" placeholder="ÜK" min="0" class="bohr-uk">
-    <input type="number" placeholder="°" min="0" class="bohr-schraeg">
-    <input type="number" placeholder="Sack" min="0" class="bohr-sack">
+    <input type="number" placeholder="mm" min="1" class="bohr-dm" title="Bohrdurchmesser (mm)">
+    <input type="number" placeholder="St." min="1" class="bohr-st" title="Anzahl Stück">
+    <select class="bohr-ort" title="Material">
+      <option value="B">Beton</option>
+      <option value="M">Mauerwerk</option>
+    </select>
+    <input type="number" placeholder="cm" min="0" class="bohr-vert" title="Vertikal (cm)">
+    <input type="number" placeholder="cm" min="0" class="bohr-hori" title="Horizontal (cm)">
+    <input type="number" placeholder="ÜK" min="0" class="bohr-uk" title="ÜK (Überkante)">
+    <input type="number" placeholder="°" min="0" class="bohr-schraeg" title="Schräg (Grad)">
+    <input type="number" placeholder="Sack" min="0" class="bohr-sack" title="Sackloch (Angabe gemäss Vorlage)">
     <button class="btn-del" onclick="removeRow('${id}')">✕</button>
   `;
   document.getElementById('bohr-list').appendChild(div);
 }
 
 function addFraesRow() {
+  if (document.querySelectorAll('#fraes-list .fraes-row').length >= 10) {
+    alert('Maximal 10× Fräsen möglich (mehr hat in der Tabelle keinen Platz).');
+    return;
+  }
   bohrCount++;
   const id = 'fraes_' + bohrCount;
   const div = document.createElement('div');
@@ -1444,6 +1858,8 @@ function addFraesRow() {
     </select>
     <input type="number" placeholder="cm" min="0" class="fraes-laenge">
     <input type="number" placeholder="cm" min="0" class="fraes-tiefe">
+    <input type="number" placeholder="m'" min="0" class="fraes-schraegm" title="schräg (m')">
+    <input type="number" placeholder="m'" min="0" class="fraes-buendigm" title="Bündig (m')">
     <button class="btn-del" onclick="removeRow('${id}')">✕</button>
   `;
   document.getElementById('fraes-list').appendChild(div);
@@ -1658,7 +2074,7 @@ async function getPyodide() {
   const micropip = _pyodide.pyimport('micropip');
   await micropip.install('openpyxl');
   await micropip.install('pillow');
-  _pyodide.runPython("\nimport openpyxl, io, base64, json\nfrom openpyxl.drawing.image import Image as XLImage\nfrom PIL import Image as PILImage\n\ndef write_cell(ws, cell_ref, value):\n    if value is None or value == '' or value == 'null':\n        return\n    try:\n        if isinstance(cell_ref, tuple):\n            cell = ws.cell(row=cell_ref[0], column=cell_ref[1])\n        else:\n            cell = ws[cell_ref]\n        import openpyxl.cell.cell\n        if isinstance(cell, openpyxl.cell.cell.MergedCell):\n            for m_range in ws.merged_cells.ranges:\n                if cell.coordinate in m_range:\n                    ws.cell(row=m_range.min_row, column=m_range.min_col).value = value\n                    return\n        cell.value = value\n    except Exception as e:\n        pass\n\ndef generate(data_json, template_b64):\n    data = json.loads(data_json)\n    template_bytes = base64.b64decode(template_b64)\n    wb = openpyxl.load_workbook(io.BytesIO(template_bytes))\n    ws = wb.active\n\n    s = data.get('stammdaten', {})\n    a = data.get('arbeit', {})\n    z = data.get('zusatzleistungen', {})\n    u = data.get('umstellen', {})\n\n    # Stammdaten\n    write_cell(ws, 'J2', s.get('firma'))\n    write_cell(ws, 'J3', s.get('name'))\n    write_cell(ws, 'J4', s.get('telefon'))\n    write_cell(ws, 'P2', s.get('rapportNr'))\n    write_cell(ws, 'P3', s.get('auftragNr'))\n    write_cell(ws, 'P4', s.get('datum'))\n    write_cell(ws, 'B6', s.get('baustelle'))\n    write_cell(ws, 'H6', s.get('baustelleNr'))\n    write_cell(ws, 'J6', s.get('adresse'))\n\n    # Arbeit & Zeit\n    write_cell(ws, 'A9',  a.get('arbeiten'))\n    write_cell(ws, 'N8',  a.get('geschoss'))\n    write_cell(ws, 'P8',  a.get('etappe'))\n    write_cell(ws, 'N9',  a.get('bauteil'))\n    write_cell(ws, 'P9',  a.get('besonderes'))\n    write_cell(ws, 'H12', a.get('zeitVon'))\n    write_cell(ws, 'I12', a.get('zeitBis'))\n\n    # Installation\n    write_cell(ws, 'K13', z.get('instBohren'))\n    write_cell(ws, 'K14', z.get('instFraesen'))\n    write_cell(ws, 'F15', z.get('geruest'))\n\n    # Schutz\n    write_cell(ws, 'K16', z.get('abdecken'))\n    write_cell(ws, 'K17', z.get('spritz'))\n    write_cell(ws, 'K18', z.get('kantholz'))\n    write_cell(ws, 'K19', z.get('rueckWand'))\n    write_cell(ws, 'K20', z.get('rueckDecke'))\n    write_cell(ws, 'K21', z.get('wasserMit'))\n    write_cell(ws, 'K22', z.get('wasserOhne'))\n\n    # Entsorgung\n    write_cell(ws, 'K23', z.get('betonTrans'))\n    write_cell(ws, 'K24', z.get('minimulde'))\n    write_cell(ws, 'K25', z.get('muldeBeton'))\n    write_cell(ws, 'K26', z.get('muldeMauer'))\n\n    # Maschinen\n    write_cell(ws, 'K27', z.get('spitz'))\n    write_cell(ws, 'K28', z.get('abbruch'))\n    write_cell(ws, 'K29', z.get('trenn'))\n    write_cell(ws, 'K30', z.get('notstrom'))\n\n    # Umstellen Bohrung\n    write_cell(ws, 'K31', u.get('bohrBohrloch'))\n    write_cell(ws, 'K32', u.get('bohr50m'))\n    write_cell(ws, 'K33', u.get('bohrEtage'))\n    write_cell(ws, 'K34', u.get('bohrGebaeude'))\n\n    # Umstellen Fraesen\n    write_cell(ws, 'K35', u.get('fraesSchnitt'))\n    write_cell(ws, 'K36', u.get('fraes50m'))\n    write_cell(ws, 'K37', u.get('fraesEtage'))\n    write_cell(ws, 'K38', u.get('fraesGebaeude'))\n\n    # Eisen\n    write_cell(ws, 'D40', z.get('eisenBem1')); write_cell(ws, 'K40', z.get('eisenCm1'))\n    write_cell(ws, 'D41', z.get('eisenBem2')); write_cell(ws, 'K41', z.get('eisenCm2'))\n    write_cell(ws, 'D42', z.get('eisenBem3')); write_cell(ws, 'K42', z.get('eisenCm3'))\n\n    # Notizen\n    write_cell(ws, 'Q52', data.get('notizen'))\n\n    # Datum Unterschrift\n    write_cell(ws, 'W69', data.get('sigDatum'))\n\n    # Bohrungen (Zeilen 47-56)\n    for i, row in enumerate(data.get('bohrungen', [])):\n        r = 47 + i\n        if r > 56: break\n        write_cell(ws, (r,1), row.get('dm'))\n        write_cell(ws, (r,2), row.get('st'))\n        ort = row.get('ort','')\n        write_cell(ws, (r,3), 'X' if ort=='B' else '')\n        write_cell(ws, (r,4), 'X' if ort=='M' else '')\n        write_cell(ws, (r,5), row.get('vert'))\n        write_cell(ws, (r,6), row.get('hori'))\n        write_cell(ws, (r,7), row.get('uk'))\n        write_cell(ws, (r,8), row.get('schraeg'))\n        write_cell(ws, (r,9), row.get('sack'))\n\n    # Fraesungen (Zeilen 59-68)\n    for i, row in enumerate(data.get('fraesungen', [])):\n        r = 59 + i\n        if r > 68: break\n        mat = row.get('material','')\n        write_cell(ws, (r,1), row.get('st'))\n        write_cell(ws, (r,2), row.get('ort'))\n        write_cell(ws, (r,3), 'B' if mat=='Beton' else '')\n        write_cell(ws, (r,4), 'M' if mat=='Mauerwerk' else '')\n        write_cell(ws, (r,5), row.get('laenge'))\n        write_cell(ws, (r,6), row.get('tiefe'))\n\n    # Signaturen als Bild\n    for sig_b64, anchor in [\n        (data.get('signaturen',{}).get('huber'), 'Q66'),\n        (data.get('signaturen',{}).get('kunde'), 'U66'),\n    ]:\n        if not sig_b64 or sig_b64 == 'null':\n            continue\n        try:\n            raw = base64.b64decode(sig_b64.split(',')[-1])\n            img_pil = PILImage.open(io.BytesIO(raw)).convert('RGBA')\n            bio = io.BytesIO()\n            img_pil.save(bio, format='PNG')\n            bio.seek(0)\n            img = XLImage(bio)\n            img.anchor = anchor\n            img.width = 200; img.height = 55\n            ws.add_image(img)\n        except:\n            pass\n\n    out = io.BytesIO()\n    wb.save(out)\n    out.seek(0)\n    return base64.b64encode(out.read()).decode()\n");
+  _pyodide.runPython("\nimport openpyxl, io, base64, json\nfrom openpyxl.drawing.image import Image as XLImage\nfrom PIL import Image as PILImage\n\ndef write_cell(ws, cell_ref, value):\n    if value is None or value == '' or value == 'null':\n        return\n    try:\n        if isinstance(cell_ref, tuple):\n            cell = ws.cell(row=cell_ref[0], column=cell_ref[1])\n        else:\n            cell = ws[cell_ref]\n        import openpyxl.cell.cell\n        if isinstance(cell, openpyxl.cell.cell.MergedCell):\n            for m_range in ws.merged_cells.ranges:\n                if cell.coordinate in m_range:\n                    ws.cell(row=m_range.min_row, column=m_range.min_col).value = value\n                    return\n        cell.value = value\n    except Exception as e:\n        pass\n\ndef generate(data_json, template_b64):\n    data = json.loads(data_json)\n    template_bytes = base64.b64decode(template_b64)\n    wb = openpyxl.load_workbook(io.BytesIO(template_bytes))\n    ws = wb.active\n\n    s = data.get('stammdaten', {})\n    a = data.get('arbeit', {})\n    z = data.get('zusatzleistungen', {})\n    u = data.get('umstellen', {})\n\n    # Stammdaten\n    write_cell(ws, 'J2', s.get('firma'))\n    write_cell(ws, 'J3', s.get('name'))\n    write_cell(ws, 'J4', s.get('telefon'))\n    write_cell(ws, 'P2', s.get('rapportNr'))\n    write_cell(ws, 'P3', s.get('auftragNr'))\n    write_cell(ws, 'P4', s.get('datum'))\n    write_cell(ws, 'B6', s.get('baustelle'))\n    write_cell(ws, 'H6', s.get('baustelleNr'))\n    write_cell(ws, 'J6', s.get('adresse'))\n\n    # Arbeit & Zeit\n    write_cell(ws, 'A9',  a.get('arbeiten'))\n    write_cell(ws, 'N8',  a.get('geschoss'))\n    write_cell(ws, 'P8',  a.get('etappe'))\n    write_cell(ws, 'N9',  a.get('bauteil'))\n    write_cell(ws, 'P9',  a.get('besonderes'))\n    write_cell(ws, 'H12', a.get('zeitVon'))\n    write_cell(ws, 'I12', a.get('zeitBis'))\n\n    # Installation\n    write_cell(ws, 'K13', z.get('instBohren'))\n    write_cell(ws, 'K14', z.get('instFraesen'))\n    write_cell(ws, 'K15', z.get('geruest'))\n\n    # Schutz\n    write_cell(ws, 'K16', z.get('abdecken'))\n    write_cell(ws, 'K17', z.get('spritz'))\n    write_cell(ws, 'K18', z.get('kantholz'))\n    write_cell(ws, 'K19', z.get('rueckWand'))\n    write_cell(ws, 'K20', z.get('rueckDecke'))\n    write_cell(ws, 'K21', z.get('wasserMit'))\n    write_cell(ws, 'K22', z.get('wasserOhne'))\n\n    # Entsorgung\n    write_cell(ws, 'K23', z.get('betonTrans'))\n    write_cell(ws, 'K24', z.get('minimulde'))\n    write_cell(ws, 'K25', z.get('muldeBeton'))\n    write_cell(ws, 'K26', z.get('muldeMauer'))\n\n    # Maschinen\n    write_cell(ws, 'K27', z.get('spitz'))\n    write_cell(ws, 'K28', z.get('abbruch'))\n    write_cell(ws, 'K29', z.get('trenn'))\n    write_cell(ws, 'K30', z.get('notstrom'))\n\n    # Umstellen Bohrung\n    write_cell(ws, 'K31', u.get('bohrBohrloch'))\n    write_cell(ws, 'K32', u.get('bohr50m'))\n    write_cell(ws, 'K33', u.get('bohrEtage'))\n    write_cell(ws, 'K34', u.get('bohrGebaeude'))\n\n    # Umstellen Fraesen\n    write_cell(ws, 'K35', u.get('fraesSchnitt'))\n    write_cell(ws, 'K36', u.get('fraes50m'))\n    write_cell(ws, 'K37', u.get('fraesEtage'))\n    write_cell(ws, 'K38', u.get('fraesGebaeude'))\n\n    # Eisen\n    write_cell(ws, 'D40', z.get('eisenBem1')); write_cell(ws, 'K40', z.get('eisenCm1'))\n    write_cell(ws, 'D41', z.get('eisenBem2')); write_cell(ws, 'K41', z.get('eisenCm2'))\n    write_cell(ws, 'D42', z.get('eisenBem3')); write_cell(ws, 'K42', z.get('eisenCm3'))\n\n    # Notizen\n    write_cell(ws, 'Q52', data.get('notizen'))\n\n    # Datum Unterschrift\n    write_cell(ws, 'W69', data.get('sigDatum'))\n\n    # Bohrungen (Zeilen 47-56)\n    for i, row in enumerate(data.get('bohrungen', [])):\n        r = 47 + i\n        if r > 56: break\n        write_cell(ws, (r,1), row.get('dm'))\n        write_cell(ws, (r,2), row.get('st'))\n        ort = row.get('ort','')\n        write_cell(ws, (r,3), 'X' if ort=='B' else '')\n        write_cell(ws, (r,4), 'X' if ort=='M' else '')\n        write_cell(ws, (r,5), row.get('vert'))\n        write_cell(ws, (r,6), row.get('hori'))\n        write_cell(ws, (r,7), row.get('uk'))\n        write_cell(ws, (r,8), row.get('schraeg'))\n        write_cell(ws, (r,9), row.get('sack'))\n\n    # Fraesungen (Zeilen 59-68)\n    for i, row in enumerate(data.get('fraesungen', [])):\n        r = 59 + i\n        if r > 68: break\n        mat = row.get('material','')\n        write_cell(ws, (r,1), row.get('st'))\n        write_cell(ws, (r,2), row.get('ort'))\n        write_cell(ws, (r,3), 'B' if mat=='Beton' else '')\n        write_cell(ws, (r,4), 'M' if mat=='Mauerwerk' else '')\n        write_cell(ws, (r,5), row.get('laenge'))\n        write_cell(ws, (r,6), row.get('tiefe'))\n        write_cell(ws, (r,8), row.get('schraegm'))\n        write_cell(ws, (r,9), row.get('buendigm'))\n\n    # Signaturen als Bild\n    for sig_b64, anchor in [\n        (data.get('signaturen',{}).get('huber'), 'Q66'),\n        (data.get('signaturen',{}).get('kunde'), 'U66'),\n    ]:\n        if not sig_b64 or sig_b64 == 'null':\n            continue\n        try:\n            raw = base64.b64decode(sig_b64.split(',')[-1])\n            img_pil = PILImage.open(io.BytesIO(raw)).convert('RGBA')\n            bio = io.BytesIO()\n            img_pil.save(bio, format='PNG')\n            bio.seek(0)\n            img = XLImage(bio)\n            img.anchor = anchor\n            img.width = 200; img.height = 55\n            ws.add_image(img)\n        except:\n            pass\n\n    out = io.BytesIO()\n    wb.save(out)\n    out.seek(0)\n    return base64.b64encode(out.read()).decode()\n");
   _pyodideReady = true;
   return _pyodide;
 }
@@ -1773,6 +2189,7 @@ async function saveRapport() {
       st: row.querySelector('.fraes-st')?.value||'', ort: row.querySelector('.fraes-ort')?.value||'',
       material: row.querySelector('.fraes-mat')?.value||'',
       laenge: row.querySelector('.fraes-laenge')?.value||'', tiefe: row.querySelector('.fraes-tiefe')?.value||'',
+      schraegm: row.querySelector('.fraes-schraegm')?.value||'', buendigm: row.querySelector('.fraes-buendigm')?.value||'',
     })),
     notizen:    v('f_notizen'),
     sigDatum:   fmtDate(v('f_sig_datum')),
