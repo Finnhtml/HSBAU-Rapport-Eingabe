@@ -2,13 +2,19 @@
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>HUBERSTRAUB AG | Full Offline Rapport</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <title>HUBERSTRAUB AG | Offline Rapport</title>
+    
+    <link rel="manifest" href="manifest.json">
+    
     <script src="xlsx-populate.min.js"></script>
+    
     <style>
         :root { --hs-red: #E30613; --bg: #f8fafc; --card: #ffffff; --border: #e2e8f0; --text: #1e293b; --label: #475569; }
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body { background-color: var(--bg); color: var(--text); font-family: sans-serif; padding-bottom: 120px; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { background-color: var(--bg); color: var(--text); font-family: -apple-system, system-ui, sans-serif; padding-bottom: 120px; }
         .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
         header { background: #fff; border-bottom: 3px solid var(--hs-red); padding: 20px; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
         .logo { font-weight: 900; font-style: italic; font-size: 1.6rem; color: var(--hs-red); }
@@ -22,19 +28,20 @@
         input:focus { outline: none; border-color: var(--hs-red); background: #fff; }
         .entry-row { border-bottom: 2px solid #f1f5f9; padding-bottom: 25px; margin-bottom: 25px; }
         .btn-add { background: #f1f5f9; color: var(--label); padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; font-weight: 700; border: none; width: 100%; margin-top: 10px; }
-        .btn-add:hover { background: #e2e8f0; color: var(--hs-red); }
         .unit { font-size: 0.7rem; color: #94a3b8; font-weight: 800; margin-top: 4px; display: block; }
-        #setup { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fff; }
+        #setup { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; background: #fff; text-align: center; }
         .btn-start { background: var(--hs-red); color: white; padding: 20px 50px; border-radius: 15px; font-weight: 800; cursor: pointer; box-shadow: 0 4px 15px rgba(227,6,19,0.3); }
         footer { position: fixed; bottom: 0; left: 0; right: 0; background: #fff; border-top: 1px solid var(--border); padding: 20px; display: flex; gap: 15px; z-index: 100; }
         .btn-save { flex-grow: 1; background: var(--hs-red); color: white; border: none; border-radius: 12px; padding: 18px; font-weight: 800; cursor: pointer; text-transform: uppercase; font-size: 1rem; }
         .hidden { display: none !important; }
+        @media (max-width: 600px) { .grid { grid-template-columns: 1fr 1fr; } .col-full { grid-column: span 2; } }
     </style>
 </head>
 <body>
 
     <div id="setup">
-        <div class="logo" style="font-size: 3rem; margin-bottom: 30px;">HUBERSTRAUB AG</div>
+        <div class="logo" style="font-size: 3rem; margin-bottom: 10px;">HUBERSTRAUB AG</div>
+        <p style="margin-bottom: 30px; color: #64748b;">OFFLINE RAPPORT-SYSTEM v1.0</p>
         <label class="btn-start">EXCEL VORLAGE LADEN<input type="file" id="fileInput" accept=".xlsx" class="hidden"></label>
     </div>
 
@@ -50,8 +57,8 @@
                     <div><label>Telefon</label><input type="text" data-cell="J4"></div>
                     <div><label>Rapport Nummer</label><input type="text" data-cell="P2"></div>
                     <div><label>Auftrag Nummer</label><input type="text" data-cell="P3"></div>
-                    <div><label>Datum</label><input type="date" data-cell="P4"></div>
-                    <div><label>Baustellen Nummer</label><input type="text" data-cell="H6"></div>
+                    <div><label>Datum</label><input type="date" id="form-date" data-cell="P4"></div>
+                    <div><label>Baustellen Nummer</label><input type="text" id="form-bnummer" data-cell="H6"></div>
                     <div class="col-full"><label>Baustelle</label><input type="text" data-cell="B6"></div>
                     <div class="col-full"><label>Adresse</label><input type="text" data-cell="J6"></div>
                     <div class="grid col-full" style="grid-template-columns: 1fr 1fr 1fr;">
@@ -66,123 +73,103 @@
 
             <div class="card">
                 <h2 class="section-title">+ ARBEIT UND ZEIT</h2>
-                
                 <span class="sub-header">+ ARBEITSZEIT</span>
                 <div class="grid">
                     <div><label>von (G12)</label><input type="time" data-cell="G12"></div>
                     <div><label>bis (I12)</label><input type="time" data-cell="I12"></div>
                 </div>
 
-                <span class="sub-header">+ INSTALLATIONSARBEITEN</span>
+                <span class="sub-header">+ INSTALLATION / WASSER / ENTSORGUNG</span>
                 <div class="grid">
-                    <div><label>Installation bohren</label><input type="number" data-cell="K13"><span class="unit">#St.#</span></div>
-                    <div><label>Installation fräsen</label><input type="number" data-cell="K14"><span class="unit">#St.#</span></div>
-                    <div><label>Gerüst erstellen</label><input type="number" data-cell="K15"><span class="unit">#h#</span></div>
-                </div>
-
-                <span class="sub-header">+ SCHÜTZEN / WASSERHALTUNG</span>
-                <div class="grid">
+                    <div><label>Inst. bohren</label><input type="number" data-cell="K13"><span class="unit">#St.#</span></div>
+                    <div><label>Inst. fräsen</label><input type="number" data-cell="K14"><span class="unit">#St.#</span></div>
+                    <div><label>Gerüstbau</label><input type="number" data-cell="K15"><span class="unit">#h#</span></div>
                     <div><label>Abdecken</label><input type="number" data-cell="K16"><span class="unit">#m2#</span></div>
-                    <div><label>Spritzschutzvorhang</label><input type="number" data-cell="K17"><span class="unit">#m2#</span></div>
-                    <div><label>Kantholz/ Schaumbord</label><input type="number" data-cell="K18"><span class="unit">#m#</span></div>
-                    <div><label>Rückhaltevorrichtung Wand</label><input type="number" data-cell="K19"><span class="unit">#St.#</span></div>
-                    <div><label>Rückhaltevorhang Decke</label><input type="number" data-cell="K20"><span class="unit">#St.#</span></div>
-                    <div><label>Wassersauger mit Bedienung</label><input type="number" data-cell="K21"><span class="unit">#h#</span></div>
-                    <div><label>Wassersauger ohne Bedienung</label><input type="number" data-cell="K22"><span class="unit">#h#</span></div>
-                </div>
-
-                <span class="sub-header">+ ENTSORGUNG</span>
-                <div class="grid">
-                    <div class="col-full"><label>Betonteiletransport über 25kg/Stück</label><input type="number" data-cell="K23"><span class="unit">#h#</span></div>
+                    <div><label>Spritzschutz</label><input type="number" data-cell="K17"><span class="unit">#m2#</span></div>
+                    <div><label>Kantholz</label><input type="number" data-cell="K18"><span class="unit">#m#</span></div>
+                    <div><label>Rückhalte Wand</label><input type="number" data-cell="K19"><span class="unit">#St.#</span></div>
+                    <div><label>Rückhalte Decke</label><input type="number" data-cell="K20"><span class="unit">#St.#</span></div>
+                    <div><label>Sauger m. Bed.</label><input type="number" data-cell="K21"><span class="unit">#h#</span></div>
                     <div><label>Minimulde</label><input type="number" data-cell="K24"><span class="unit">#St.#</span></div>
-                    <div><label>Mulde Entsorgung Beton</label><input type="number" data-cell="K25"><span class="unit">#m3#</span></div>
-                    <div><label>Mulde Entsorgung Mauerwerk</label><input type="number" data-cell="K26"><span class="unit">#m3#</span></div>
+                    <div><label>Mulde Beton</label><input type="number" data-cell="K25"><span class="unit">#m3#</span></div>
+                    <div><label>Mulde Mauerw.</label><input type="number" data-cell="K26"><span class="unit">#m3#</span></div>
                 </div>
 
-                <span class="sub-header">+ MASCHINEN</span>
+                <span class="sub-header">+ MASCHINEN & UMSTELLEN</span>
                 <div class="grid">
-                    <div><label>Spitzmaschine 12kg m. Spitzeisen</label><input type="number" data-cell="K27"><span class="unit">#h#</span></div>
-                    <div><label>Abbruchhammer m. Spitzeisen</label><input type="number" data-cell="K28"><span class="unit">#h#</span></div>
-                    <div><label>Trennscheibe mit Blatt</label><input type="number" data-cell="K29"><span class="unit">#h#</span></div>
-                    <div><label>Notstromgruppe</label><input type="number" data-cell="K30"><span class="unit">#h#</span></div>
-                </div>
-
-                <span class="sub-header">+ UMSTELLEN - BOHREINRICHTUNG</span>
-                <div class="grid">
-                    <div><label>von Bohrloch zu Bohrloch</label><input type="number" data-cell="K31"><span class="unit">#St.#</span></div>
-                    <div><label>über 50m</label><input type="number" data-cell="K32"><span class="unit">#St.#</span></div>
-                    <div><label>in andere Etage</label><input type="number" data-cell="K33"><span class="unit">#St.#</span></div>
-                    <div><label>in anderes Gebäude</label><input type="number" data-cell="K34"><span class="unit">#St.#</span></div>
-                </div>
-
-                <span class="sub-header">+ UMSTELLEN - FRÄSEINRICHTUNG</span>
-                <div class="grid">
-                    <div><label>von Schnitt zu Schnitt</label><input type="number" data-cell="K35"><span class="unit">#St.#</span></div>
-                    <div><label>über 50m</label><input type="number" data-cell="K36"><span class="unit">#St.#</span></div>
-                    <div><label>in andere Etage</label><input type="number" data-cell="K37"><span class="unit">#St.#</span></div>
-                    <div><label>in anderes Gebäude</label><input type="number" data-cell="K38"><span class="unit">#St.#</span></div>
+                    <div><label>Spitzmasch. 12kg</label><input type="number" data-cell="K27"><span class="unit">#h#</span></div>
+                    <div><label>Trennscheibe</label><input type="number" data-cell="K29"><span class="unit">#h#</span></div>
+                    <div><label>Umst. Bohr Loch-Loch</label><input type="number" data-cell="K31"><span class="unit">#St.#</span></div>
+                    <div><label>Umst. Fräs Schnitt-Schnitt</label><input type="number" data-cell="K35"><span class="unit">#St.#</span></div>
                 </div>
 
                 <span class="sub-header">+ EISENQUERSCHNITT > 3cm²</span>
                 <div class="grid">
-                    <div><label>Eisen 1</label><input type="number" data-cell="K40"><span class="unit">#cm²#</span></div>
-                    <div><label>Eisen 2</label><input type="number" data-cell="K41"><span class="unit">#cm²#</span></div>
-                    <div><label>Eisen 3</label><input type="number" data-cell="K42"><span class="unit">#cm²#</span></div>
+                    <div><label>Eisen 1</label><input type="number" data-cell="K40"><span class="unit">cm²</span></div>
+                    <div><label>Eisen 2</label><input type="number" data-cell="K41"><span class="unit">cm²</span></div>
+                    <div><label>Eisen 3</label><input type="number" data-cell="K42"><span class="unit">cm²</span></div>
                 </div>
             </div>
 
             <div class="card">
-                <h2 class="section-title">BOHREN (LISTE)</h2>
+                <h2 class="section-title">BOHREN</h2>
                 <div id="bohrList">
                     <div class="entry-row">
                         <div class="grid">
-                            <div><label>Ø Millimeter</label><input type="number" data-dyn="A" data-base="47"></div>
+                            <div><label>Ø mm</label><input type="number" data-dyn="A" data-base="47"></div>
                             <div><label>Stück</label><input type="number" data-dyn="B" data-base="47"></div>
-                            <div style="grid-column: span 2;"><label>Ort</label><input type="text" data-dyn="C" data-base="47"></div>
+                            <div class="col-full"><label>Ort</label><input type="text" data-dyn="C" data-base="47"></div>
                             <div><label>B/M</label><select data-dyn="D" data-base="47"><option value=""></option><option value="Beton">Beton</option><option value="Mauerwerk">Mauerwerk</option></select></div>
-                            <div><label>Vertikal cm</label><input type="number" data-dyn="E" data-base="47"></div>
-                            <div><label>Horizontal cm</label><input type="number" data-dyn="F" data-base="47"></div>
+                            <div><label>Vert. cm</label><input type="number" data-dyn="E" data-base="47"></div>
+                            <div><label>Horiz. cm</label><input type="number" data-dyn="F" data-base="47"></div>
                             <div><label>ü. Kopf</label><input type="number" data-dyn="G" data-base="47"></div>
-                            <div><label>Schräge Bohrung</label><input type="number" data-dyn="H" data-base="47"></div>
-                            <div><label>Sackbohrung</label><input type="number" data-dyn="I" data-base="47"></div>
+                            <div><label>Schräg</label><input type="number" data-dyn="H" data-base="47"></div>
+                            <div><label>Sack</label><input type="number" data-dyn="I" data-base="47"></div>
                         </div>
                     </div>
                 </div>
-                <button class="btn-add" onclick="addRow('bohrList')">+ WEITERE BOHRUNG HINZUFÜGEN</button>
+                <button class="btn-add" onclick="addRow('bohrList')">+ ZEILE HINZUFÜGEN</button>
             </div>
 
             <div class="card">
-                <h2 class="section-title">FRÄSEN (LISTE)</h2>
+                <h2 class="section-title">FRÄSEN</h2>
                 <div id="frasList">
                     <div class="entry-row">
                         <div class="grid">
                             <div><label>Stück</label><input type="number" data-dyn="A" data-base="59"></div>
-                            <div style="grid-column: span 2;"><label>Ort</label><input type="text" data-dyn="B" data-base="59"></div>
+                            <div class="col-full"><label>Ort</label><input type="text" data-dyn="B" data-base="59"></div>
                             <div><label>B/M</label><select class="fras-logic" data-base="59"><option value=""></option><option value="Beton">Beton</option><option value="Mauerwerk">Mauerwerk</option></select></div>
-                            <div><label>Länge (m)</label><input type="number" data-dyn="E" data-base="59"></div>
-                            <div><label>Tiefe (m)</label><input type="number" data-dyn="F" data-base="59"></div>
-                            <div><label>schräg m'</label><input type="number" data-dyn="H" data-base="59"></div>
-                            <div><label>bündig m'</label><input type="number" data-dyn="I" data-base="59"></div>
+                            <div><label>L (m)</label><input type="number" data-dyn="E" data-base="59"></div>
+                            <div><label>T (m)</label><input type="number" data-dyn="F" data-base="59"></div>
+                            <div><label>Schräg</label><input type="number" data-dyn="H" data-base="59"></div>
+                            <div><label>Bündig</label><input type="number" data-dyn="I" data-base="59"></div>
                         </div>
                     </div>
                 </div>
-                <button class="btn-add" onclick="addRow('frasList')">+ WEITERE FRÄSUNG HINZUFÜGEN</button>
+                <button class="btn-add" onclick="addRow('frasList')">+ ZEILE HINZUFÜGEN</button>
             </div>
 
             <div class="card">
-                <h2 class="section-title">SONSTIGES</h2>
-                <textarea data-cell="Q52" rows="6" placeholder="Bemerkungen..."></textarea>
+                <h2 class="section-title">BEMERKUNGEN (Q52)</h2>
+                <textarea data-cell="Q52" rows="6"></textarea>
             </div>
         </div>
     </div>
 
     <footer>
-        <button onclick="location.reload()" style="background:none; border:none; color:#94a3b8; font-weight:700; cursor:pointer;">NEU</button>
+        <button onclick="location.reload()" style="background:none; border:none; color:#94a3b8; font-weight:700; cursor:pointer;">RESET</button>
         <button id="saveBtn" disabled onclick="saveReport()" class="btn-save">RAPPORT SPEICHERN</button>
     </footer>
 
     <script>
         let workbook = null;
+
+        // Service Worker Registrierung für Offline-Nutzung
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('sw.js').then(() => console.log("Offline-Cache aktiv"));
+            });
+        }
 
         function addRow(id) {
             const container = document.getElementById(id);
@@ -212,24 +199,19 @@
         async function saveReport() {
             if (!workbook) return;
             const sheet = workbook.sheet(0);
-            
-            // Dateiname vorbereiten
-            const bNummer = document.querySelector('[data-cell="H6"]').value || "Rapport";
-            const datum = document.querySelector('[data-cell="P4"]').value || "Datum-fehlt";
+            const bNummer = document.getElementById('form-bnummer').value || "Rapport";
+            const datum = document.getElementById('form-date').value || "Datum";
 
-            // Statische Felder
             document.querySelectorAll('[data-cell]').forEach(el => {
                 const val = el.value;
                 if (val !== "") sheet.cell(el.getAttribute('data-cell')).value(isNaN(val) ? val : Number(val));
             });
 
-            // Dynamische Felder
             document.querySelectorAll('[data-dyn]').forEach(el => {
                 const cellRef = el.getAttribute('data-dyn') + el.getAttribute('data-base');
                 if (el.value !== "") sheet.cell(cellRef).value(isNaN(el.value) ? el.value : Number(el.value));
             });
 
-            // Fräs-Logik (B/M)
             document.querySelectorAll('.fras-logic').forEach(el => {
                 const row = el.getAttribute('data-base');
                 if (el.value === "Beton") { sheet.cell("C"+row).value("B"); sheet.cell("D"+row).value(""); }

@@ -1,20 +1,9 @@
 {
-  "short_name": "HSBAU Rapport Manager",
-  "name": "HSBAU Bohren und Fräsen Rapport Manager",
-  "icons": [
-    {
-      "src": "icon.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "icon.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ],
-  "start_url": "./index.html",
+  "name": "HS Rapport",
+  "short_name": "HS Rapport",
+  "start_url": "index.html",
   "display": "standalone",
-  "theme_color": "#1e3a8a",
-  "background_color": "#f1f5f9"
+  "background_color": "#ffffff",
+  "theme_color": "#E30613",
+  "icons": [{ "src": "icon.png", "sizes": "192x192", "type": "image/png" }]
 }
