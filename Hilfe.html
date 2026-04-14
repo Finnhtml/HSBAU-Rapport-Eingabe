@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <title>HUBERSTRAUB AG | Hilfe & FAQ</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Barlow+Condensed:wght@700;900&family=Barlow:wght@400;500;600&display=swap" rel="stylesheet">
+
+    <style>
+        :root {
+            --red: #E30613;
+            --red-dark: #b30510;
+            --bg: #f2f1ef;
+            --white: #ffffff;
+            --black: #0d0d0d;
+            --mid: #5a5a5a;
+            --border: #d8d6d3;
+            --tag-bg: #ffe8e9;
+            --tag-color: #c0020e;
+            --mono: 'DM Mono', monospace;
+            --head: 'Barlow Condensed', sans-serif;
+            --body: 'Barlow', sans-serif;
+        }
+
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+
+        body {
+            background: var(--bg);
+            color: var(--black);
+            font-family: var(--body);
+            min-height: 100vh;
+        }
+
+        /* ─── HEADER ─── */
+        header {
+            background: var(--black);
+            padding: 18px 24px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            position: sticky;
+            top: 0;
+            z-index: 99;
+        }
+
+        .logo {
+            font-family: var(--head);
+            font-weight: 900;
+            font-style: italic;
+            font-size: 1.35rem;
+            color: var(--red);
+            letter-spacing: 0.03em;
+        }
+
+        .back-btn {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            background: none;
+            border: 1.5px solid rgba(255,255,255,0.2);
+            color: #fff;
+            font-family: var(--mono);
+            font-size: 0.68rem;
+            letter-spacing: 0.08em;
+            padding: 8px 14px;
+            border-radius: 6px;
+            cursor: pointer;
+            text-decoration: none;
+            transition: background 0.2s, border-color 0.2s;
+        }
+        .back-btn:hover { background: rgba(255,255,255,0.07); border-color: rgba(255,255,255,0.4); }
+        .back-btn svg { width: 14px; height: 14px; }
+
+        /* ─── HERO ─── */
+        .hero {
+            background: var(--white);
+            border-bottom: 3px solid var(--red);
+            padding: 42px 24px 36px;
+            text-align: center;
+        }
+        .hero-tag {
+            display: inline-block;
+            font-family: var(--mono);
+            font-size: 0.65rem;
+            letter-spacing: 0.12em;
+            color: var(--tag-color);
+            background: var(--tag-bg);
+            padding: 5px 14px;
+            border-radius: 20px;
+            margin-bottom: 18px;
+        }
+        .hero h1 {
+            font-family: var(--head);
+            font-weight: 900;
+            font-size: clamp(2rem, 6vw, 3.2rem);
+            line-height: 1;
+            letter-spacing: -0.01em;
+            text-transform: uppercase;
+            color: var(--black);
+            margin-bottom: 12px;
+        }
+        .hero h1 span { color: var(--red); }
+        .hero p {
+            font-size: 0.95rem;
+            color: var(--mid);
+            max-width: 440px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        /* ─── CONTENT ─── */
+        .content {
+            max-width: 720px;
+            margin: 0 auto;
+            padding: 32px 20px 80px;
+        }
+
+        .section-label {
+            font-family: var(--mono);
+            font-size: 0.63rem;
+            letter-spacing: 0.14em;
+            color: var(--mid);
+            text-transform: uppercase;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .section-label::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+
+        /* ─── FAQ ITEM ─── */
+        .faq-item {
+            background: var(--white);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            margin-bottom: 10px;
+            overflow: hidden;
+            transition: box-shadow 0.2s;
+        }
+        .faq-item:hover { box-shadow: 0 4px 20px rgba(0,0,0,0.07); }
+
+        .faq-question {
+            width: 100%;
+            background: none;
+            border: none;
+            padding: 20px 22px;
+            display: flex;
+            align-items: flex-start;
+            gap: 14px;
+            cursor: pointer;
+            text-align: left;
+        }
+
+        .faq-num {
+            font-family: var(--mono);
+            font-size: 0.62rem;
+            color: var(--red);
+            background: var(--tag-bg);
+            min-width: 28px;
+            height: 28px;
+            border-radius: 6px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            flex-shrink: 0;
+            margin-top: 1px;
+        }
+
+        .faq-q-text {
+            flex: 1;
+            font-family: var(--body);
+            font-weight: 600;
+            font-size: 0.95rem;
+            color: var(--black);
+            line-height: 1.4;
+        }
+
+        .faq-icon {
+            width: 22px;
+            height: 22px;
+            border-radius: 50%;
+            background: var(--bg);
+            border: 1px solid var(--border);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: background 0.2s, transform 0.25s;
+            margin-top: 2px;
+        }
+        .faq-icon svg {
+            width: 10px;
+            height: 10px;
+            transition: transform 0.25s;
+        }
+
+        .faq-item.open .faq-icon {
+            background: var(--red);
+            border-color: var(--red);
+        }
+        .faq-item.open .faq-icon svg {
+            transform: rotate(45deg);
+            stroke: #fff;
+        }
+        .faq-item.open .faq-icon svg line { stroke: #fff; }
+
+        .faq-answer {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.35s ease, padding 0.25s;
+        }
+        .faq-item.open .faq-answer { max-height: 500px; }
+
+        .faq-answer-inner {
+            padding: 0 22px 22px 64px;
+            font-size: 0.9rem;
+            line-height: 1.75;
+            color: var(--mid);
+            border-top: 1px solid var(--bg);
+        }
+        .faq-answer-inner strong { color: var(--black); }
+        .faq-answer-inner .tip {
+            display: flex;
+            gap: 10px;
+            background: #f7f9ff;
+            border-left: 3px solid #3b82f6;
+            border-radius: 0 8px 8px 0;
+            padding: 12px 14px;
+            margin-top: 14px;
+            font-size: 0.83rem;
+            color: #1e3a8a;
+        }
+        .faq-answer-inner .tip-icon { flex-shrink: 0; font-size: 1rem; }
+
+        /* ─── CONTACT STRIP ─── */
+        .contact-strip {
+            margin-top: 40px;
+            background: var(--black);
+            border-radius: 14px;
+            padding: 28px 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+        .contact-strip-text h3 {
+            font-family: var(--head);
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: #fff;
+            text-transform: uppercase;
+        }
+        .contact-strip-text p {
+            font-size: 0.82rem;
+            color: #888;
+            margin-top: 4px;
+        }
+        .contact-strip-btn {
+            background: var(--red);
+            color: #fff;
+            border: none;
+            font-family: var(--head);
+            font-weight: 700;
+            font-size: 1rem;
+            letter-spacing: 0.05em;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            text-transform: uppercase;
+            white-space: nowrap;
+            transition: background 0.2s;
+        }
+        .contact-strip-btn:hover { background: var(--red-dark); }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">HUBERSTRAUB AG</div>
+        <a href="index.html" class="back-btn">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                <polyline points="15 18 9 12 15 6"/>
+            </svg>
+            Zurück
+        </a>
+    </header>
+
+    <div class="hero">
+        <span class="hero-tag">DIGITAL RAPPORT — HILFE</span>
+        <h1>Häufige <span>Fragen</span></h1>
+        <p>Hier finden Sie Antworten auf die wichtigsten Fragen zur Bedienung der digitalen Rapporterfassung.</p>
+    </div>
+
+    <div class="content">
+
+        <p class="section-label">Erste Schritte</p>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggle(this)">
+                <span class="faq-num">01</span>
+                <span class="faq-q-text">Ich sehe nur «Vorlage auswählen» – was muss ich tun?</span>
+                <span class="faq-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Beim ersten Öffnen der App müssen Sie einmalig die <strong>Excel-Vorlage (.xlsx)</strong> von Ihrem Gerät laden. Tippen Sie auf den roten Button, wählen Sie die Datei aus Ihrem Dateimanager oder E-Mail-Anhang aus – danach startet die App sofort.<br><br>
+                    <strong>Wichtig:</strong> Die Vorlage wird auf Ihrem Gerät gespeichert, sodass Sie sie beim nächsten Mal nicht mehr neu laden müssen.
+                    <div class="tip"><span class="tip-icon">💡</span> Die Vorlage erhalten Sie von Ihrem Vorgesetzten oder aus dem internen Firmenordner.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggle(this)">
+                <span class="faq-num">02</span>
+                <span class="faq-q-text">Muss ich die Vorlage jedes Mal neu laden?</span>
+                <span class="faq-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Nein. Die Vorlage wird beim ersten Laden automatisch gespeichert. Solange Sie die App nicht zurücksetzen oder den Browser-Verlauf löschen, bleibt sie dauerhaft vorhanden – auch nach dem Schließen des Browsers.
+                </div>
+            </div>
+        </div>
+
+        <p class="section-label" style="margin-top:30px;">Rapport ausfüllen</p>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggle(this)">
+                <span class="faq-num">03</span>
+                <span class="faq-q-text">Wo finde ich die Rapport-Nummer und Auftragsnummer?</span>
+                <span class="faq-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Die <strong>Rapport-Nummer</strong> und die <strong>Auftragsnummer</strong> erhalten Sie von Ihrem Polier oder Bauleiter. Sie befinden sich meist auf dem Auftragsblatt oder im Arbeitsauftrag für die jeweilige Baustelle.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggle(this)">
+                <span class="faq-num">04</span>
+                <span class="faq-q-text">Wie füge ich mehrere Bohrungen oder Fräsarbeiten hinzu?</span>
+                <span class="faq-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Tippen Sie am Ende des Abschnittes «Bohrungen» oder «Fräsarbeiten» auf den grauen Button <strong>«+ ZEILE BOHREN»</strong> bzw. <strong>«+ ZEILE FRÄSEN»</strong>. Es erscheint automatisch eine neue leere Zeile, die Sie ausfüllen können.<br><br>
+                    Sie können bis zu <strong>10 Zeilen</strong> pro Abschnitt hinzufügen.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggle(this)">
+                <span class="faq-num">05</span>
+                <span class="faq-q-text">Was bedeuten «Vert.», «Horiz.» und «ü.Kopf» bei den Bohrungen?</span>
+                <span class="faq-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Diese Felder beschreiben die <strong>Bohrrichtung</strong>:
+                    <br><br>
+                    <strong>Vert.</strong> = Vertikale Bohrungen (z. B. senkrecht in den Boden oder die Decke)<br>
+                    <strong>Horiz.</strong> = Horizontale Bohrungen (waagrecht durch Wände)<br>
+                    <strong>ü.Kopf</strong> = Überkopf-Bohrungen (von unten nach oben, z. B. in die Decke)
+                    <br><br>
+                    Tragen Sie die jeweilige Anzahl der Bohrungen in das entsprechende Feld ein.
+                </div>
+            </div>
+        </div>
+
+        <p class="section-label" style="margin-top:30px;">Speichern & Datei</p>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggle(this)">
+                <span class="faq-num">06</span>
+                <span class="faq-q-text">Ich tippe auf «Rapport speichern» – was passiert dann?</span>
+                <span class="faq-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Die App erstellt eine <strong>ausgefüllte Excel-Datei</strong> mit Ihren eingetragenen Daten und lädt diese automatisch auf Ihr Gerät herunter. Der Dateiname setzt sich aus der <strong>Baustellen-Nummer</strong> und dem <strong>Datum</strong> zusammen (z. B. <em>1234_2025-06-15.xlsx</em>).<br><br>
+                    Die Datei finden Sie danach im <strong>Downloads-Ordner</strong> Ihres Geräts.
+                    <div class="tip"><span class="tip-icon">📲</span> Auf dem iPhone erscheint die Datei direkt in der Vorschau – tippen Sie auf «Sichern in Dateien» oder teilen Sie sie per E-Mail weiter.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggle(this)">
+                <span class="faq-num">07</span>
+                <span class="faq-q-text">Werden meine eingetragenen Daten gespeichert, wenn ich die Seite schliesse?</span>
+                <span class="faq-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    <strong>Nein.</strong> Die eingetragenen Formulardaten (Felder wie Firma, Name, Bohrungen usw.) werden <em>nicht</em> automatisch zwischengespeichert. Wenn Sie die Seite schliessen oder neu laden, sind die Einträge weg.<br><br>
+                    <strong>Tipp:</strong> Füllen Sie den Rapport vollständig aus und speichern Sie ihn <em>bevor</em> Sie die Seite verlassen.
+                    <div class="tip"><span class="tip-icon">⚠️</span> Nur die geladene Vorlage bleibt gespeichert – nicht Ihre eingetragenen Daten.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggle(this)">
+                <span class="faq-num">08</span>
+                <span class="faq-q-text">Was ist «Vorlage tauschen» unten links – und wann brauche ich das?</span>
+                <span class="faq-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Mit «Vorlage tauschen» löschen Sie die gespeicherte Excel-Vorlage und können eine neue laden. Das brauchen Sie, wenn:<br><br>
+                    – Es eine <strong>neue Version</strong> der Vorlage gibt<br>
+                    – Die gespeicherte Vorlage <strong>fehlerhaft</strong> ist<br>
+                    – Sie auf einem Gerät für einen <strong>anderen Betrieb</strong> arbeiten möchten<br><br>
+                    <strong>Achtung:</strong> Alle nicht gespeicherten Rapporte gehen dabei verloren!
+                </div>
+            </div>
+        </div>
+
+        <p class="section-label" style="margin-top:30px;">Probleme & Fehler</p>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggle(this)">
+                <span class="faq-num">09</span>
+                <span class="faq-q-text">Der «Rapport speichern»-Button ist grau und ich kann nicht tippen.</span>
+                <span class="faq-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Das passiert, wenn <strong>keine Vorlage geladen</strong> ist. Der Button wird erst aktiv, sobald die Excel-Vorlage erfolgreich eingelesen wurde.<br><br>
+                    Lösung: Tippen Sie auf «Vorlage tauschen» oder laden Sie die Seite neu und wählen Sie die Vorlagedatei erneut aus.
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggle(this)">
+                <span class="faq-num">10</span>
+                <span class="faq-q-text">Die heruntergeladene Datei lässt sich nicht öffnen.</span>
+                <span class="faq-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Mögliche Ursachen und Lösungen:<br><br>
+                    <strong>1. Kein Excel auf dem Gerät:</strong> Installieren Sie Microsoft Excel oder eine kostenlose Alternative wie Google Tabellen.<br><br>
+                    <strong>2. Datei unvollständig heruntergeladen:</strong> Prüfen Sie, ob der Download vollständig abgeschlossen wurde (Downloads-Ordner).<br><br>
+                    <strong>3. Falsches Programm öffnet die Datei:</strong> Tippen Sie die Datei lang an → «Öffnen mit» → Excel auswählen.
+                    <div class="tip"><span class="tip-icon">📩</span> Alternativ: Senden Sie die .xlsx-Datei per E-Mail und öffnen Sie sie auf dem PC im Büro.</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="faq-item">
+            <button class="faq-question" onclick="toggle(this)">
+                <span class="faq-num">11</span>
+                <span class="faq-q-text">Die App zeigt nur eine weisse Seite oder lädt nicht.</span>
+                <span class="faq-icon">
+                    <svg viewBox="0 0 24 24" fill="none" stroke="#555" stroke-width="2.5" stroke-linecap="round">
+                        <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+                    </svg>
+                </span>
+            </button>
+            <div class="faq-answer">
+                <div class="faq-answer-inner">
+                    Versuchen Sie folgendes der Reihe nach:<br><br>
+                    <strong>1.</strong> Seite im Browser neu laden (Wischen nach unten auf dem Handy, oder F5 am PC)<br>
+                    <strong>2.</strong> Browser-App schliessen und neu öffnen<br>
+                    <strong>3.</strong> Internetverbindung prüfen (für den ersten Ladevorgang wird eine Verbindung benötigt)<br>
+                    <strong>4.</strong> Einen anderen Browser probieren (z. B. Chrome oder Safari)<br><br>
+                    Falls das Problem bleibt, wenden Sie sich an Ihren Vorgesetzten.
+                </div>
+            </div>
+        </div>
+
+        <!-- Contact -->
+        <div class="contact-strip">
+            <div class="contact-strip-text">
+                <h3>Noch eine Frage?</h3>
+                <p>Wenden Sie sich an Ihren Polier oder die Büroverwaltung.</p>
+            </div>
+            <a href="index.html" class="contact-strip-btn">Zurück zur App</a>
+        </div>
+
+    </div>
+
+    <script>
+        function toggle(btn) {
+            const item = btn.closest('.faq-item');
+            const wasOpen = item.classList.contains('open');
+            document.querySelectorAll('.faq-item.open').forEach(i => i.classList.remove('open'));
+            if (!wasOpen) item.classList.add('open');
+        }
+    </script>
+
+</body>
+</html>
