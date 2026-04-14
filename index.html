@@ -696,7 +696,14 @@
 
                 // ── Datei ausgeben ──
                 const bNum = document.getElementById('form-bnummer').value.trim() || 'Rapport';
-                const dateStr = new Date().toLocaleDateString('de-CH').replace(/\./g, '-');
+                const dateInput = document.getElementById('form-date').value;
+                let dateStr = '';
+                if (dateInput) {
+                    const date = new Date(dateInput);
+                    dateStr = date.toLocaleDateString('de-CH').replace(/\./g, '-');
+                } else {
+                    dateStr = new Date().toLocaleDateString('de-CH').replace(/\./g, '-');
+                }
                 const filename = `${bNum}_${dateStr}.xlsx`;
 
                 const buffer = await workbook.xlsx.writeBuffer();
