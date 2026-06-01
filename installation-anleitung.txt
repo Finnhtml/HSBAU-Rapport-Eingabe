@@ -1,0 +1,14 @@
+1. Google Chrome installieren
+2. Den Link, aus der Link.txt datei in Google Chrome einfügen, und website öffnen
+3. Wenn die Website geöffnet ist, in Google Chrome oben in auf der Rechten Seite auf die drei Punkte
+4. Auf den 4. Punkt von unten (Streamen, Speichern und Teilen) klicken
+5. HS Rapport installieren
+6. Es öffnet sich ein kleines bestätigungsfenster, dieses bestätigen
+7. Die App öffnet sich, Rapport Datei von dem Swisstransfer Link (zuvor auf dem Gerät gespeichert) anwählen
+8. Fertig! 
+
+Hinweis: Falls der Browser Chache gelöscht wird, muss die Tabelle auch wieder neu reingeladen werden
+
+Mit Freundlichen Grüßen, 
+Finn Wasmer,
+Finnwasi@gmx.de / Finnwebsite@outlook.de

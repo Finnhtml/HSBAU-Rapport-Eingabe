@@ -1,9 +1,11 @@
 {
-  "name": "HS Rapport",
-  "short_name": "HS Rapport",
+  "name": "HSBAU Rapport",
+  "short_name": "HSBAU Rapport",
   "start_url": "index.html",
   "display": "standalone",
   "background_color": "#ffffff",
   "theme_color": "#E30613",
-  "icons": [{ "src": "icon.png", "sizes": "192x192", "type": "image/png" }]
+  "icons": [
+    { "src": "icon.svg", "sizes": "192x192", "type": "image/svg+xml" }
+  ]
 }
