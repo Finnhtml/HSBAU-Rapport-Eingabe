@@ -7,7 +7,6 @@
 7. Die App öffnet sich, Rapport Datei von dem Swisstransfer Link (zuvor auf dem Gerät gespeichert) anwählen
 8. Fertig! 
 
-Hinweis: Falls der Browser Chache gelöscht wird, muss die Tabelle auch wieder neu reingeladen werden
 
 Mit Freundlichen Grüßen, 
 Finn Wasmer,
