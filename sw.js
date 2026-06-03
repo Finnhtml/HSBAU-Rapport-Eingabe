@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hs-rapport-v4';
+const CACHE_NAME = 'hs-rapport-v5';
 const ASSETS = [
   'index.html',
   'xlsx-populate.min.js',
@@ -51,8 +51,8 @@ const ASSETS = [
   'assets/hilfe_bilder/bauteil.png',
   'assets/hilfe_bilder/geschoss.png',
   'assets/hilfe_bilder/datum.png',
-  'https://cdn.jsdelivr.net/npm/exceljs@4.4.0/dist/exceljs.min.js',
-  'https://cdn.jsdelivr.net/npm/signature_pad@4.0.0/dist/signature_pad.umd.min.js'
+  'exceljs.min.js',
+  'signature_pad.umd.min.js'
 ];
 
 self.addEventListener('install', (e) => {
