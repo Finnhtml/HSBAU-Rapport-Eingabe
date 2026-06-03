@@ -562,13 +562,64 @@
         }
 
         // ─── Hilfe-Bilder ─────────────────────────────────────
+        const helpImageMap = {
+            'Firma':                                    'firma',
+            'Name':                                     'name',
+            'Telefon':                                  'telefon',
+            'Rapport Nummer':                           'rapport_nummer',
+            'Auftrag Nummer':                           'auftrag_nummer',
+            'Datum':                                    'datum',
+            'Baustellen Nummer':                        'baustellen_nummer',
+            'Baustelle':                                'baustelle',
+            'Adresse':                                  'adresse',
+            'Geschoss':                                 'geschoss',
+            'Bauteil':                                  'bauteil',
+            'Etappe':                                   'etappe',
+            'Besonderes':                               'besonderes',
+            'Ausgeführte Arbeiten':                     'ausgefuehrte_arbeiten',
+            'Arbeitszeit':                              'arbeitszeit',
+            'Installation Bohren':                      'installation_bohren',
+            'Installation Fräsen':                      'installation_fraesen',
+            'Gerüst erstellen':                         'geruest_erstellen',
+            'Abdecken':                                 'abdecken',
+            'Spritzschutzvorhang':                      'spritzschutzvorhang',
+            'Kantholz-Schaumboard':                     'kantholz_schaumboard',
+            'Rückhaltevorrichtung an Wand':             'rueckhaltevorrichtung_an_wand',
+            'Rückhaltevorrichtung an Decke':            'rueckhaltevorrichtung_an_decke',
+            'Wassersauger mit Bedienung':               'wassersauger_mit_bedienung',
+            'Wassersauger ohne Bedienung':              'wassersauger_ohne_bedienung',
+            'Betonteiletransport über 25kg':            'betonteiletransport_ueber_25kg',
+            'Minimulde':                                'minimulde',
+            'Mulde entsorgung Beton':                   'mulde_entsorgung_beton',
+            'Mulde entsorgung Mauerwerk':               'mulde_entsorgung_mauerwerk',
+            'Spitzmaschine 12kg mit Spitzeisen':        'spitzmaschine_12kg_mit_spitzeisen',
+            'Abbruchhammer mit Spitzeisen':             'abbruchhammer_mit_spitzeisen',
+            'Trennscheibe mit Blatt':                   'trennscheibe_mit_blatt',
+            'Notstromgruppe':                           'notstromgruppe',
+            'Bohreinrichtung (von Bohrloch zu Bohrloch)': 'bohreinrichtung_von_bohrloch_zu_bohrloch',
+            'Bohrenrichtung (über 50m)':                'bohreinrichtung_ueber_50m',
+            'Bohrenrichtung (in andere Etage)':         'bohreinrichtung_in_andere_etage',
+            'Bohrenrichtung (in anderes Gebäude)':      'bohreinrichtung_in_anderes_gebaeude',
+            'Fräsenrichtung (von Schnitt zu Schnitt)':  'fraeseinrichtung_von_schnitt_zu_schnitt',
+            'Fräsenrichtung (über 50m)':                'fraeseinrichtung_ueber_50m',
+            'Fräsenrichtung (in andere Etage)':         'fraeseinrichtung_in_andere_etage',
+            'Fräsenrichtung (in anderes Gebäude)':      'fraeseinrichtung_in_anderes_gebaeude',
+            'Bohren 1-10':                              'bohren_1_10',
+            'Fräsen 1-10':                              'fraesen_1_10',
+            'Visum Huber Straub AG':                    'visum_huber_straub_ag',
+            'Visum Kunde':                              'visum_kunde',
+            'Bemerkungen':                              'bemerkungen',
+            'Bilder':                                   'bilder',
+        };
+
         function showHelp(name) {
             const modal = document.getElementById('imgModal');
             document.getElementById('modalTitle').innerText = name;
             const img = document.getElementById('modalImg');
             document.getElementById('modalFallback').style.display = 'none';
             img.style.display = 'block';
-            img.src = `assets/hilfe bilder/${name}.png`;
+            const filename = helpImageMap[name] || name;
+            img.src = `assets/hilfe bilder/${filename}`;
             modal.style.display = 'flex';
         }
 
