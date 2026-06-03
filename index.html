@@ -35,7 +35,7 @@
 
         .label-row { display: flex; align-items: center; justify-content: space-between; margin-bottom: 5px; }
         label { font-size: 0.75rem; font-weight: 700; color: var(--label); }
-        .info-btn { background: #e2e8f0; color: #475569; border: none; border-radius: 50%; width: 22px; height: 22px; font-size: 11px; cursor: pointer; display: flex; align-items: center; justify-content: center; font-weight: bold; flex-shrink: 0; }
+
 
         input, textarea, select { width: 100%; background: #f8fafc; border: 1px solid var(--border); border-radius: 10px; padding: 12px; font-size: 1rem; color: var(--text); -webkit-appearance: none; }
         input:focus, textarea:focus, select:focus { outline: none; border-color: var(--hs-red); background: #fff; }
@@ -51,11 +51,7 @@
         canvas { width: 100%; height: 180px; touch-action: none; border-radius: 10px; display: block; }
         .sig-clear { position: absolute; top: 8px; right: 8px; background: #fee2e2; color: #ef4444; border: none; padding: 5px 10px; border-radius: 5px; font-size: 0.7rem; font-weight: bold; cursor: pointer; z-index: 10; }
 
-        /* Modal */
-        #imgModal { display: none; position: fixed; z-index: 1000; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); justify-content: center; align-items: center; padding: 20px; }
-        .modal-content { background: white; padding: 15px; border-radius: 15px; position: relative; max-width: 95%; text-align: center; }
-        #modalImg { max-width: 100%; max-height: 70vh; border-radius: 5px; margin-top: 10px; }
-        .close-modal { position: absolute; top: -10px; right: -10px; background: var(--hs-red); color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; justify-content: center; align-items: center; cursor: pointer; font-weight: bold; border: none; font-size: 1rem; }
+
 
         /* Toast */
         #toast { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%); background: #1e293b; color: white; padding: 12px 24px; border-radius: 30px; font-size: 0.85rem; font-weight: 700; z-index: 200; display: none; white-space: nowrap; }
@@ -100,15 +96,6 @@
 </head>
 <body>
 
-    <!-- Hilfe-Bild Modal -->
-    <div id="imgModal" onclick="this.style.display='none'">
-        <div class="modal-content" onclick="event.stopPropagation()">
-            <button class="close-modal" onclick="document.getElementById('imgModal').style.display='none'">✕</button>
-            <p id="modalTitle" style="font-weight: 900; color: var(--hs-red); font-size:1rem;"></p>
-            <img id="modalImg" src="" alt="Hilfe-Bild" onerror="this.style.display='none'; document.getElementById('modalFallback').style.display='block'">
-            <p id="modalFallback" style="display:none; color:#94a3b8; padding:20px;">Kein Hilfe-Bild vorhanden.</p>
-        </div>
-    </div>
 
     <!-- Toast Notification -->
     <div id="toast"></div>
@@ -138,55 +125,55 @@
                 <h2 class="section-title">Allgemeine Informationen</h2>
                 <div class="grid">
                     <div class="col-full">
-                        <div class="label-row"><label>Firma</label><button class="info-btn" onclick="showHelp('Firma')">ⓘ</button></div>
+                        <div class="label-row"><label>Firma</label></div>
                         <input type="text" data-cell="J2" placeholder="Firmenname">
                     </div>
                     <div>
-                        <div class="label-row"><label>Name</label><button class="info-btn" onclick="showHelp('Name')">ⓘ</button></div>
+                        <div class="label-row"><label>Name</label></div>
                         <input type="text" data-cell="J3" placeholder="Vor- und Nachname">
                     </div>
                     <div>
-                        <div class="label-row"><label>Telefon</label><button class="info-btn" onclick="showHelp('Telefon')">ⓘ</button></div>
+                        <div class="label-row"><label>Telefon</label></div>
                         <input type="tel" data-cell="J4" placeholder="+41 xx xxx xx xx">
                     </div>
                     <div>
-                        <div class="label-row"><label>Rapport Nr.</label><button class="info-btn" onclick="showHelp('Rapport Nummer')">ⓘ</button></div>
+                        <div class="label-row"><label>Rapport Nr.</label></div>
                         <input type="text" data-cell="P2" placeholder="z.B. 2024-001">
                     </div>
                     <div>
-                        <div class="label-row"><label>Auftrag Nr.</label><button class="info-btn" onclick="showHelp('Auftrag Nummer')">ⓘ</button></div>
+                        <div class="label-row"><label>Auftrag Nr.</label></div>
                         <input type="text" data-cell="P3" placeholder="Auftragsnummer">
                     </div>
                     <div>
-                        <div class="label-row"><label>Datum</label><button class="info-btn" onclick="showHelp('Datum')">ⓘ</button></div>
+                        <div class="label-row"><label>Datum</label></div>
                         <input type="date" id="form-date" data-cell="P4">
                     </div>
                     <div>
-                        <div class="label-row"><label>Baustellen Nr.</label><button class="info-btn" onclick="showHelp('Baustellen Nummer')">ⓘ</button></div>
+                        <div class="label-row"><label>Baustellen Nr.</label></div>
                         <input type="text" id="form-bnummer" data-cell="H6" placeholder="BST-Nr.">
                     </div>
                     <div class="col-full">
-                        <div class="label-row"><label>Baustelle</label><button class="info-btn" onclick="showHelp('Baustelle')">ⓘ</button></div>
+                        <div class="label-row"><label>Baustelle</label></div>
                         <input type="text" data-cell="B6" placeholder="Bezeichnung der Baustelle">
                     </div>
                     <div class="col-full">
-                        <div class="label-row"><label>Adresse</label><button class="info-btn" onclick="showHelp('Adresse')">ⓘ</button></div>
+                        <div class="label-row"><label>Adresse</label></div>
                         <input type="text" data-cell="J6" placeholder="Strasse, PLZ Ort">
                     </div>
                     <div>
-                        <div class="label-row"><label>Geschoss</label><button class="info-btn" onclick="showHelp('Geschoss')">ⓘ</button></div>
+                        <div class="label-row"><label>Geschoss</label></div>
                         <input type="text" data-cell="K8" placeholder="z.B. EG, 1.OG">
                     </div>
                     <div>
-                        <div class="label-row"><label>Bauteil</label><button class="info-btn" onclick="showHelp('Bauteil')">ⓘ</button></div>
+                        <div class="label-row"><label>Bauteil</label></div>
                         <input type="text" data-cell="K9" placeholder="z.B. Wand, Decke">
                     </div>
                     <div>
-                        <div class="label-row"><label>Etappe</label><button class="info-btn" onclick="showHelp('Etappe')">ⓘ</button></div>
+                        <div class="label-row"><label>Etappe</label></div>
                         <input type="text" data-cell="P8" placeholder="z.B. Phase 1">
                     </div>
                     <div>
-                        <div class="label-row"><label>Besonderes</label><button class="info-btn" onclick="showHelp('Besonderes')">ⓘ</button></div>
+                        <div class="label-row"><label>Besonderes</label></div>
                         <input type="text" data-cell="P9" placeholder="Zusätzliche Info">
                     </div>
                 </div>
@@ -194,13 +181,13 @@
 
             <!-- Ausgeführte Arbeiten -->
             <div class="card">
-                <h2 class="section-title" style="display: flex; align-items: center; justify-content: space-between;">Ausgeführte Arbeiten<button class="info-btn" onclick="showHelp('Ausgeführte Arbeiten')" style="margin: 0;">ⓘ</button></h2>
+                <h2 class="section-title" style="display: flex; align-items: center; justify-content: space-between;">Ausgeführte Arbeiten</h2>
                 <textarea data-cell="A9" rows="4" placeholder="Beschreibung der durchgeführten Arbeiten..."></textarea>
             </div>
 
             <!-- NEU: Arbeitszeit -->
             <div class="card">
-                <h2 class="section-title" style="display: flex; align-items: center; justify-content: space-between;">Arbeitszeit<button class="info-btn" onclick="showHelp('Arbeitszeit')" style="margin: 0;">ⓘ</button></h2>
+                <h2 class="section-title" style="display: flex; align-items: center; justify-content: space-between;">Arbeitszeit</h2>
                 <div class="grid">
                     <!-- Tag 1 -->
                     <div class="day-card">
@@ -255,35 +242,35 @@
                 <span class="sub-header" style="margin-top: 0;">Installation & Schutz</span>
                 <div class="grid">
                     <div>
-                        <div class="label-row"><label>Installation bohren</label><button class="info-btn" onclick="showHelp('Installation Bohren')">ⓘ</button></div>
+                        <div class="label-row"><label>Installation bohren</label></div>
                         <input type="number" data-cell="K15" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Installation fräsen</label><button class="info-btn" onclick="showHelp('Installation Fräsen')">ⓘ</button></div>
+                        <div class="label-row"><label>Installation fräsen</label></div>
                         <input type="number" data-cell="K16" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Gerüst erstellen</label><button class="info-btn" onclick="showHelp('Gerüst erstellen')">ⓘ</button></div>
+                        <div class="label-row"><label>Gerüst erstellen</label></div>
                         <input type="number" data-cell="K17" min="0" step="0.25" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">h</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Abdecken</label><button class="info-btn" onclick="showHelp('Abdecken')">ⓘ</button></div>
+                        <div class="label-row"><label>Abdecken</label></div>
                         <input type="number" data-cell="K18" min="0" step="0.01" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">m²</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Spritzschutzvorhang</label><button class="info-btn" onclick="showHelp('Spritzschutzvorhang')">ⓘ</button></div>
+                        <div class="label-row"><label>Spritzschutzvorhang</label></div>
                         <input type="number" data-cell="K19" min="0" step="0.01" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">m²</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Kantholz / Schaumbord</label><button class="info-btn" onclick="showHelp('Kantholz-Schaumboard')">ⓘ</button></div>
+                        <div class="label-row"><label>Kantholz / Schaumbord</label></div>
                         <input type="number" data-cell="K20" min="0" step="0.01" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">m</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Rückhaltevorrichtung an Wand</label><button class="info-btn" onclick="showHelp('Rückhaltevorrichtung an Wand')">ⓘ</button></div>
+                        <div class="label-row"><label>Rückhaltevorrichtung an Wand</label></div>
                         <input type="number" data-cell="K21" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Rückhaltevorhang an Decke</label><button class="info-btn" onclick="showHelp('Rückhaltevorrichtung an Decke')">ⓘ</button></div>
+                        <div class="label-row"><label>Rückhaltevorhang an Decke</label></div>
                         <input type="number" data-cell="K22" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                 </div>
@@ -291,43 +278,43 @@
                 <span class="sub-header">Maschinen & Entsorgung</span>
                 <div class="grid">
                     <div>
-                        <div class="label-row"><label>Wassersauger mit Bedienung</label><button class="info-btn" onclick="showHelp('Wassersauger mit Bedienung')">ⓘ</button></div>
+                        <div class="label-row"><label>Wassersauger mit Bedienung</label></div>
                         <input type="number" data-cell="K23" min="0" step="0.25" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">h</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Wassersauger ohne Bedienung</label><button class="info-btn" onclick="showHelp('Wassersauger ohne Bedienung')">ⓘ</button></div>
+                        <div class="label-row"><label>Wassersauger ohne Bedienung</label></div>
                         <input type="number" data-cell="K24" min="0" step="0.25" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">h</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Betonteiletransport über 25kg</label><button class="info-btn" onclick="showHelp('Betonteiletransport über 25kg')">ⓘ</button></div>
+                        <div class="label-row"><label>Betonteiletransport über 25kg</label></div>
                         <input type="number" data-cell="K25" min="0" step="0.25" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">h</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Minimulde</label><button class="info-btn" onclick="showHelp('Minimulde')">ⓘ</button></div>
+                        <div class="label-row"><label>Minimulde</label></div>
                         <input type="number" data-cell="K26" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Mulde Entsorgung Beton</label><button class="info-btn" onclick="showHelp('Mulde entsorgung Beton')">ⓘ</button></div>
+                        <div class="label-row"><label>Mulde Entsorgung Beton</label></div>
                         <input type="number" data-cell="K27" min="0" step="0.01" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">m³</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Mulde Entsorgung Mauerwerk</label><button class="info-btn" onclick="showHelp('Mulde entsorgung Mauerwerk')">ⓘ</button></div>
+                        <div class="label-row"><label>Mulde Entsorgung Mauerwerk</label></div>
                         <input type="number" data-cell="K28" min="0" step="0.01" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">m³</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Spitzmaschine 12kg m. Spitzeis.</label><button class="info-btn" onclick="showHelp('Spitzmaschine 12kg mit Spitzeisen')">ⓘ</button></div>
+                        <div class="label-row"><label>Spitzmaschine 12kg m. Spitzeis.</label></div>
                         <input type="number" data-cell="K29" min="0" step="0.25" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">h</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Abbruchhammer m. Spitzeisen</label><button class="info-btn" onclick="showHelp('Abbruchhammer mit Spitzeisen')">ⓘ</button></div>
+                        <div class="label-row"><label>Abbruchhammer m. Spitzeisen</label></div>
                         <input type="number" data-cell="K30" min="0" step="0.25" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">h</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Trennscheibe mit Blatt</label><button class="info-btn" onclick="showHelp('Trennscheibe mit Blatt')">ⓘ</button></div>
+                        <div class="label-row"><label>Trennscheibe mit Blatt</label></div>
                         <input type="number" data-cell="K31" min="0" step="0.25" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">h</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>Notstromgruppe</label><button class="info-btn" onclick="showHelp('Notstromgruppe')">ⓘ</button></div>
+                        <div class="label-row"><label>Notstromgruppe</label></div>
                         <input type="number" data-cell="K32" min="0" step="0.25" placeholder="0.00"> <span style="font-size:0.7rem; color:#94a3b8;">h</span>
                     </div>
                 </div>
@@ -340,19 +327,19 @@
                 <span class="sub-header" style="margin-top: 0;">Bohreinrichtung</span>
                 <div class="grid">
                     <div>
-                        <div class="label-row"><label>von Bohrloch zu Bohrloch</label><button class="info-btn" onclick="showHelp('Bohreinrichtung (von Bohrloch zu Bohrloch)')">ⓘ</button></div>
+                        <div class="label-row"><label>von Bohrloch zu Bohrloch</label></div>
                         <input type="number" data-cell="K33" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>über 50m</label><button class="info-btn" onclick="showHelp('Bohrenrichtung (über 50m)')">ⓘ</button></div>
+                        <div class="label-row"><label>über 50m</label></div>
                         <input type="number" data-cell="K34" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>in andere Etage</label><button class="info-btn" onclick="showHelp('Bohrenrichtung (in andere Etage)')">ⓘ</button></div>
+                        <div class="label-row"><label>in andere Etage</label></div>
                         <input type="number" data-cell="K35" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>in anderes Gebäude</label><button class="info-btn" onclick="showHelp('Bohrenrichtung (in anderes Gebäude)')">ⓘ</button></div>
+                        <div class="label-row"><label>in anderes Gebäude</label></div>
                         <input type="number" data-cell="K36" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                 </div>
@@ -360,19 +347,19 @@
                 <span class="sub-header">Fräseinrichtung</span>
                 <div class="grid">
                     <div>
-                        <div class="label-row"><label>von Schnitt zu Schnitt</label><button class="info-btn" onclick="showHelp('Fräsenrichtung (von Schnitt zu Schnitt)')">ⓘ</button></div>
+                        <div class="label-row"><label>von Schnitt zu Schnitt</label></div>
                         <input type="number" data-cell="K37" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>über 50m</label><button class="info-btn" onclick="showHelp('Fräsenrichtung (über 50m)')">ⓘ</button></div>
+                        <div class="label-row"><label>über 50m</label></div>
                         <input type="number" data-cell="K38" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>in andere Etage</label><button class="info-btn" onclick="showHelp('Fräsenrichtung (in andere Etage)')">ⓘ</button></div>
+                        <div class="label-row"><label>in andere Etage</label></div>
                         <input type="number" data-cell="K39" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                     <div>
-                        <div class="label-row"><label>in anderes Gebäude</label><button class="info-btn" onclick="showHelp('Fräsenrichtung (in anderes Gebäude)')">ⓘ</button></div>
+                        <div class="label-row"><label>in anderes Gebäude</label></div>
                         <input type="number" data-cell="K40" min="0" placeholder="0"> <span style="font-size:0.7rem; color:#94a3b8;">St.</span>
                     </div>
                 </div>
@@ -380,7 +367,7 @@
 
             <!-- Bohrungen -->
             <div class="card">
-                <h2 class="section-title" style="display: flex; align-items: center; justify-content: space-between;">Bohrungen (max. 10)<button class="info-btn" onclick="showHelp('Bohren 1-10')" style="margin: 0;">ⓘ</button></h2>
+                <h2 class="section-title" style="display: flex; align-items: center; justify-content: space-between;">Bohrungen (max. 10)</h2>
                 <div id="bohrList">
                     <div class="entry-row">
                         <div class="grid">
@@ -437,7 +424,7 @@
 
             <!-- Fräsarbeiten -->
             <div class="card">
-                <h2 class="section-title" style="display: flex; align-items: center; justify-content: space-between;">Fräsarbeiten (max. 10)<button class="info-btn" onclick="showHelp('Fräsen 1-10')" style="margin: 0;">ⓘ</button></h2>
+                <h2 class="section-title" style="display: flex; align-items: center; justify-content: space-between;">Fräsarbeiten (max. 10)</h2>
                 <div id="frasList">
                     <div class="entry-row">
                         <div class="grid">
@@ -495,14 +482,14 @@
                 <h2 class="section-title">Visum (Unterschriften)</h2>
                 <div class="grid" style="grid-template-columns: 1fr 1fr; gap: 20px;">
                     <div>
-                        <div class="label-row"><label>Huberstraub</label><button class="info-btn" onclick="showHelp('Visum Huber Straub AG')">ⓘ</button></div>
+                        <div class="label-row"><label>Huberstraub</label></div>
                         <div class="sig-wrapper">
                             <canvas id="sig-hs"></canvas>
                             <button class="sig-clear" onclick="padHS.clear()">Löschen</button>
                         </div>
                     </div>
                     <div>
-                        <div class="label-row"><label>Kunde</label><button class="info-btn" onclick="showHelp('Visum Kunde')">ⓘ</button></div>
+                        <div class="label-row"><label>Kunde</label></div>
                         <div class="sig-wrapper">
                             <canvas id="sig-kunde"></canvas>
                             <button class="sig-clear" onclick="padKunde.clear()">Löschen</button>
@@ -514,13 +501,13 @@
 
             <!-- Bemerkungen -->
             <div class="card">
-                <h2 class="section-title" style="display: flex; align-items: center; justify-content: space-between;">Bemerkungen<button class="info-btn" onclick="showHelp('Bemerkungen')" style="margin: 0;">ⓘ</button></h2>
+                <h2 class="section-title" style="display: flex; align-items: center; justify-content: space-between;">Bemerkungen</h2>
                 <textarea data-cell="Q54" rows="5" placeholder="Weitere Bemerkungen zum Rapport..."></textarea>
             </div>
 
             <!-- Fotos -->
             <div class="card">
-                <h2 class="section-title" style="display: flex; align-items: center; justify-content: space-between;">Bilder<button class="info-btn" onclick="showHelp('Bilder')" style="margin: 0;">ⓘ</button></h2>
+                <h2 class="section-title" style="display: flex; align-items: center; justify-content: space-between;">Bilder</h2>
                 <label style="display: block; margin-bottom: 15px;">
                     <div style="background: var(--hs-red); color: white; padding: 15px; border-radius: 10px; text-align: center; cursor: pointer; font-weight: 700;">
                         📸 FOTOS HINZUFÜGEN
@@ -561,67 +548,6 @@
             setTimeout(() => t.style.display = 'none', duration);
         }
 
-        // ─── Hilfe-Bilder ─────────────────────────────────────
-        const helpImageMap = {
-            'Firma':                                    'firma',
-            'Name':                                     'name',
-            'Telefon':                                  'telefon',
-            'Rapport Nummer':                           'rapport_nummer',
-            'Auftrag Nummer':                           'auftrag_nummer',
-            'Datum':                                    'datum',
-            'Baustellen Nummer':                        'baustellen_nummer',
-            'Baustelle':                                'baustelle',
-            'Adresse':                                  'adresse',
-            'Geschoss':                                 'geschoss',
-            'Bauteil':                                  'bauteil',
-            'Etappe':                                   'etappe',
-            'Besonderes':                               'besonderes',
-            'Ausgeführte Arbeiten':                     'ausgefuehrte_arbeiten',
-            'Arbeitszeit':                              'arbeitszeit',
-            'Installation Bohren':                      'installation_bohren',
-            'Installation Fräsen':                      'installation_fraesen',
-            'Gerüst erstellen':                         'geruest_erstellen',
-            'Abdecken':                                 'abdecken',
-            'Spritzschutzvorhang':                      'spritzschutzvorhang',
-            'Kantholz-Schaumboard':                     'kantholz_schaumboard',
-            'Rückhaltevorrichtung an Wand':             'rueckhaltevorrichtung_an_wand',
-            'Rückhaltevorrichtung an Decke':            'rueckhaltevorrichtung_an_decke',
-            'Wassersauger mit Bedienung':               'wassersauger_mit_bedienung',
-            'Wassersauger ohne Bedienung':              'wassersauger_ohne_bedienung',
-            'Betonteiletransport über 25kg':            'betonteiletransport_ueber_25kg',
-            'Minimulde':                                'minimulde',
-            'Mulde entsorgung Beton':                   'mulde_entsorgung_beton',
-            'Mulde entsorgung Mauerwerk':               'mulde_entsorgung_mauerwerk',
-            'Spitzmaschine 12kg mit Spitzeisen':        'spitzmaschine_12kg_mit_spitzeisen',
-            'Abbruchhammer mit Spitzeisen':             'abbruchhammer_mit_spitzeisen',
-            'Trennscheibe mit Blatt':                   'trennscheibe_mit_blatt',
-            'Notstromgruppe':                           'notstromgruppe',
-            'Bohreinrichtung (von Bohrloch zu Bohrloch)': 'bohreinrichtung_von_bohrloch_zu_bohrloch',
-            'Bohrenrichtung (über 50m)':                'bohreinrichtung_ueber_50m',
-            'Bohrenrichtung (in andere Etage)':         'bohreinrichtung_in_andere_etage',
-            'Bohrenrichtung (in anderes Gebäude)':      'bohreinrichtung_in_anderes_gebaeude',
-            'Fräsenrichtung (von Schnitt zu Schnitt)':  'fraeseinrichtung_von_schnitt_zu_schnitt',
-            'Fräsenrichtung (über 50m)':                'fraeseinrichtung_ueber_50m',
-            'Fräsenrichtung (in andere Etage)':         'fraeseinrichtung_in_andere_etage',
-            'Fräsenrichtung (in anderes Gebäude)':      'fraeseinrichtung_in_anderes_gebaeude',
-            'Bohren 1-10':                              'bohren_1_10',
-            'Fräsen 1-10':                              'fraesen_1_10',
-            'Visum Huber Straub AG':                    'visum_huber_straub_ag',
-            'Visum Kunde':                              'visum_kunde',
-            'Bemerkungen':                              'bemerkungen',
-            'Bilder':                                   'bilder',
-        };
-
-        function showHelp(name) {
-            const modal = document.getElementById('imgModal');
-            document.getElementById('modalTitle').innerText = name;
-            const img = document.getElementById('modalImg');
-            document.getElementById('modalFallback').style.display = 'none';
-            img.style.display = 'block';
-            const filename = helpImageMap[name] || name;
-            img.src = `assets/hilfe bilder/${filename}`;
-            modal.style.display = 'flex';
-        }
 
         // ─── App starten ──────────────────────────────────────
         function startApp() {
