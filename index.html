@@ -723,6 +723,11 @@
                     }
                 });
 
+                // ── Zeilenumbruch für Bemerkungen (Q54) ──
+                const bemerkCell = sheet.getCell('Q54');
+                if (!bemerkCell.alignment) bemerkCell.alignment = {};
+                bemerkCell.alignment = { ...bemerkCell.alignment, wrapText: true };
+
                 // ── Dynamische Zeilen (Bohrungen & Fräsungen) ──
                 document.querySelectorAll('[data-dyn]').forEach(el => {
                     const col = el.getAttribute('data-dyn');

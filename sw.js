@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hs-rapport-v8'; // Ich habe auf v8 erhöht, da du nun das Asset-Manifest verkleinerst
+const CACHE_NAME = 'hs-rapport-v9'; // Ich habe auf v9 erhöht, wegen besserem Bemerkungstextfeld.
 const ASSETS = [
   'index.html',
   'download-center.html',
