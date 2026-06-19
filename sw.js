@@ -1,4 +1,4 @@
-const CACHE_NAME = 'hs-rapport-v9'; // Ich habe auf v9 erhöht, wegen besserem Bemerkungstextfeld.
+const CACHE_NAME = 'hs-rapport-v10'; // Ich habe auf v10 erhöht, wegen Eingaben Löschen Button
 const ASSETS = [
   'index.html',
   'download-center.html',
