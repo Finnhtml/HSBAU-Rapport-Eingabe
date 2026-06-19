@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>HUBERSTRAUB AG | Taschenrechner</title>
+
+    <style>
+        :root {
+            --hs-red: #E30613;
+            --hs-red-hover: #b91c1c;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --border: #e2e8f0;
+            --text: #1e293b;
+            --label: #475569;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; touch-action: manipulation; }
+        body { 
+            background-color: var(--bg); 
+            color: var(--text); 
+            font-family: -apple-system, system-ui, sans-serif; 
+            padding-bottom: 60px; 
+        }
+        .container { max-width: 1000px; margin: 0 auto; padding: 20px; }
+
+        /* Header Style */
+        header { 
+            background: #fff; 
+            border-bottom: 3px solid var(--hs-red); 
+            padding: 15px 20px; 
+            position: sticky; 
+            top: 0; 
+            z-index: 50; 
+            display: flex; 
+            justify-content: space-between; 
+            align-items: center; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); 
+        }
+        .logo { font-weight: 900; font-style: italic; font-size: 1.4rem; color: var(--hs-red); }
+        .nav-button { 
+            display: inline-flex; 
+            align-items: center; 
+            justify-content: center; 
+            padding: 10px 16px; 
+            background: #f1f5f9; 
+            color: var(--label); 
+            border-radius: 999px; 
+            border: 1px solid var(--border); 
+            font-size: 0.85rem; 
+            font-weight: 700; 
+            text-decoration: none; 
+            transition: all 0.2s; 
+        }
+        .nav-button:hover { background: #e2e8f0; color: var(--text); }
+
+        /* Calculator Card */
+        .calculator-card { 
+            background: var(--card); 
+            border-radius: 15px; 
+            padding: 25px; 
+            margin: 20px auto; 
+            border: 1px solid var(--border); 
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); 
+            max-width: 400px;
+        }
+
+        .calc-display-wrapper {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .calc-display {
+            background: #f8fafc;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 20px 15px;
+            font-size: 2.5rem;
+            text-align: right;
+            font-weight: 800;
+            color: var(--text);
+            word-wrap: break-word;
+            min-height: 85px;
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-end;
+            align-items: flex-end;
+        }
+
+        .calc-history {
+            font-size: 1rem;
+            color: #94a3b8;
+            font-weight: 600;
+            min-height: 1.2rem;
+            margin-bottom: 5px;
+        }
+
+        /* Copy Button */
+        .copy-btn {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            background: none;
+            border: none;
+            color: #94a3b8;
+            cursor: pointer;
+            font-size: 1.2rem;
+            transition: color 0.2s;
+        }
+        .copy-btn:hover { color: var(--hs-red); }
+
+        /* Calculator Grid */
+        .calc-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 12px;
+        }
+
+        .calc-btn {
+            background: #f1f5f9;
+            border: 2px solid var(--border);
+            border-radius: 10px;
+            padding: 18px 10px;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text);
+            cursor: pointer;
+            transition: all 0.1s;
+            user-select: none;
+        }
+        .calc-btn:hover { background: #e2e8f0; }
+        .calc-btn:active { transform: scale(0.95); }
+
+        .btn-op { 
+            background: #fef2f2; 
+            color: var(--hs-red); 
+            border-color: #fca5a5; 
+            font-size: 1.8rem;
+        }
+        .btn-op:hover { background: #fee2e2; }
+
+        .btn-clear { 
+            background: #e2e8f0; 
+            color: var(--hs-red); 
+        }
+
+        .btn-equals { 
+            background: var(--hs-red); 
+            color: white; 
+            border-color: var(--hs-red-hover); 
+            font-size: 1.8rem;
+        }
+        .btn-equals:hover { background: var(--hs-red-hover); }
+
+        .span-2 { grid-column: span 2; }
+        .row-span-2 { grid-row: span 2; }
+
+        /* Toast */
+        #toast { 
+            position: fixed; 
+            bottom: 30px; 
+            left: 50%; 
+            transform: translateX(-50%); 
+            background: #1e293b; 
+            color: white; 
+            padding: 12px 24px; 
+            border-radius: 30px; 
+            font-size: 0.85rem; 
+            font-weight: 700; 
+            z-index: 200; 
+            display: none; 
+            white-space: nowrap; 
+            box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); 
+        }
+
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header>
+        <div class="logo">HUBERSTRAUB AG</div>
+        <a href="index.html" class="nav-button">← Rapport</a>
+    </header>
+
+    <div class="container">
+        
+        <!-- Standard Taschenrechner -->
+        <div class="calculator-card">
+            <div class="calc-display-wrapper">
+                <button class="copy-btn" onclick="copyResult()" title="Kopieren">📋</button>
+                <div class="calc-display">
+                    <div class="calc-history" id="history"></div>
+                    <div id="display">0</div>
+                </div>
+            </div>
+            
+            <div class="calc-grid">
+                <!-- Row 1 -->
+                <button class="calc-btn btn-clear span-2" onclick="clearCalc()">AC</button>
+                <button class="calc-btn btn-clear" onclick="deleteLast()">DEL</button>
+                <button class="calc-btn btn-op" onclick="chooseOperator('÷')">÷</button>
+
+                <!-- Row 2 -->
+                <button class="calc-btn" onclick="appendNumber('7')">7</button>
+                <button class="calc-btn" onclick="appendNumber('8')">8</button>
+                <button class="calc-btn" onclick="appendNumber('9')">9</button>
+                <button class="calc-btn btn-op" onclick="chooseOperator('×')">×</button>
+
+                <!-- Row 3 -->
+                <button class="calc-btn" onclick="appendNumber('4')">4</button>
+                <button class="calc-btn" onclick="appendNumber('5')">5</button>
+                <button class="calc-btn" onclick="appendNumber('6')">6</button>
+                <button class="calc-btn btn-op" onclick="chooseOperator('-')">−</button>
+
+                <!-- Row 4 -->
+                <button class="calc-btn" onclick="appendNumber('1')">1</button>
+                <button class="calc-btn" onclick="appendNumber('2')">2</button>
+                <button class="calc-btn" onclick="appendNumber('3')">3</button>
+                <button class="calc-btn btn-op" onclick="chooseOperator('+')">+</button>
+
+                <!-- Row 5 -->
+                <button class="calc-btn span-2" onclick="appendNumber('0')">0</button>
+                <button class="calc-btn" onclick="appendNumber('.')">,</button>
+                <button class="calc-btn btn-equals" onclick="compute()">=</button>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast"></div>
+
+    <script>
+        let currentOperand = '0';
+        let previousOperand = '';
+        let operation = undefined;
+        let shouldResetScreen = false;
+
+        const displayElement = document.getElementById('display');
+        const historyElement = document.getElementById('history');
+
+        function updateDisplay() {
+            // Kommazahlen für Anzeige mit Komma formatieren
+            displayElement.innerText = currentOperand.replace('.', ',');
+            
+            if (operation != null) {
+                historyElement.innerText = `${previousOperand.replace('.', ',')} ${operation}`;
+            } else {
+                historyElement.innerText = '';
+            }
+        }
+
+        function appendNumber(number) {
+            if (shouldResetScreen) {
+                currentOperand = '';
+                shouldResetScreen = false;
+            }
+            if (number === '.' && currentOperand.includes('.')) return;
+            if (currentOperand === '0' && number !== '.') {
+                currentOperand = number;
+            } else {
+                currentOperand = currentOperand.toString() + number.toString();
+            }
+            updateDisplay();
+        }
+
+        function chooseOperator(op) {
+            if (currentOperand === '') return;
+            if (previousOperand !== '') {
+                compute();
+            }
+            operation = op;
+            previousOperand = currentOperand;
+            currentOperand = '';
+            updateDisplay();
+        }
+
+        function compute() {
+            let computation;
+            const prev = parseFloat(previousOperand);
+            const current = parseFloat(currentOperand);
+            if (isNaN(prev) || isNaN(current)) return;
+
+            switch (operation) {
+                case '+': computation = prev + current; break;
+                case '-': computation = prev - current; break;
+                case '×': computation = prev * current; break;
+                case '÷': 
+                    if (current === 0) {
+                        showToast("Teilen durch 0 nicht möglich!");
+                        return;
+                    }
+                    computation = prev / current; 
+                    break;
+                default: return;
+            }
+
+            // Runden auf max. 4 Nachkommastellen, um floating point Fehler zu vermeiden
+            currentOperand = Math.round(computation * 10000) / 10000;
+            currentOperand = currentOperand.toString();
+            operation = undefined;
+            previousOperand = '';
+            shouldResetScreen = true;
+            updateDisplay();
+        }
+
+        function clearCalc() {
+            currentOperand = '0';
+            previousOperand = '';
+            operation = undefined;
+            updateDisplay();
+        }
+
+        function deleteLast() {
+            if (shouldResetScreen) return;
+            currentOperand = currentOperand.toString().slice(0, -1);
+            if (currentOperand === '' || currentOperand === '-') {
+                currentOperand = '0';
+            }
+            updateDisplay();
+        }
+
+        // Tastatur-Unterstützung
+        window.addEventListener('keydown', (e) => {
+            if (e.key >= 0 && e.key <= 9) appendNumber(e.key);
+            if (e.key === '.' || e.key === ',') appendNumber('.');
+            if (e.key === '=' || e.key === 'Enter') {
+                e.preventDefault();
+                compute();
+            }
+            if (e.key === 'Backspace') deleteLast();
+            if (e.key === 'Escape') clearCalc();
+            if (e.key === '+' || e.key === '-') chooseOperator(e.key);
+            if (e.key === '*') chooseOperator('×');
+            if (e.key === '/') chooseOperator('÷');
+        });
+
+        // --- Toast & Copy Funktion ---
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            t.textContent = msg;
+            t.style.display = 'block';
+            setTimeout(() => t.style.display = 'none', 3000);
+        }
+
+        function copyResult() {
+            const textToCopy = displayElement.innerText;
+            if(textToCopy && textToCopy !== '0') {
+                const textArea = document.createElement("textarea");
+                textArea.value = textToCopy;
+                document.body.appendChild(textArea);
+                textArea.select();
+                try {
+                    document.execCommand('copy');
+                    showToast('Ergebnis kopiert: ' + textToCopy);
+                } catch (err) {
+                    showToast('Fehler beim Kopieren!');
+                }
+                document.body.removeChild(textArea);
+            }
+        }
+    </script>
+</body>
+</html>

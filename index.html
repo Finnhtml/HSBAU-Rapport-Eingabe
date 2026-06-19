@@ -524,7 +524,7 @@
     </div> <!-- Ende MainForm -->
 
     <footer>
-        <button onclick="clearStorage()" style="background:none; border:none; color:#94a3b8; font-size:0.7rem; font-weight:700; cursor:pointer; white-space:nowrap;">VORLAGE<br>TAUSCHEN</button>
+        <button onclick="clearStorage()" style="background:none; border:none; color:#94a3b8; font-size:0.7rem; font-weight:700; cursor:pointer; white-space:nowrap;">Eingaben<br>Löschen</button>
         <button id="saveBtn" onclick="saveReport()" class="btn-save">💾 RAPPORT SPEICHERN</button>
     </footer>
 
@@ -911,9 +911,9 @@
                 : 'Eisenquerschnitt > 3cm² — wird erfasst';
         }
 
-        // ─── Vorlage tauschen ─────────────────────────────────
+        // ─── Alle Eingaben Löschen ─────────────────────────────────
         function clearStorage() {
-            if (confirm('Vorlage löschen und Formular zurücksetzen?')) {
+            if (confirm('Alle Eingaben löschen und Formular zurücksetzen? Achtung: Diese Aktion kann nicht rückgängig gemacht werden!')) {
                 localStorage.clear();
                 location.reload();
             }
